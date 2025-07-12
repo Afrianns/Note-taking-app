@@ -1,0 +1,38 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@import url('https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
+
+@theme static {
+  --color-main-50: #f6f6f6;
+  --color-main-100: #dadada;
+  --color-main-200: #cfcfcf;
+  --color-main-300: #e4e4e4;
+  --color-main-400: #909090;
+  --color-main-500: #3d3d3d;
+  --color-main-600: #63a408;
+  --color-main-700: #606060;
+  --color-main-800: #262626;
+  --color-main-900: #171717;
+  --color-main-950: #262626;
+
+  --color-primary-400: rgb(255, 0, 89);
+}
+
+@theme {
+  --font-Red-Hat: "Red Hat Text", sans-serif;
+  --font-Manu-Consent: "Covered By Your Grace", cursive;
+}
+
+:root {
+  --ui-bg: var(--color-neutral-50);
+  --ui-primary: var(--color-primary-400);
+}
+
+.dark {
+  --ui-bg: var(--color-neutral-900);
+}
+
+body {
+  @apply font-Red-Hat;
+}
