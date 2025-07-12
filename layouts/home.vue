@@ -1,5 +1,13 @@
 <template>
-    <div class="flex">
+    <div v-show="!isVerified"
+        class="bg-green-400 w-full py-3 text-gray-200 font-medium flex items-center justify-center gap-x-2 fixed top-0 left-0 right-0 z-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 56 56">
+            <path fill="currentColor"
+                d="M28 51.906c13.055 0 23.906-10.828 23.906-23.906c0-13.055-10.875-23.906-23.93-23.906C14.899 4.094 4.095 14.945 4.095 28c0 13.078 10.828 23.906 23.906 23.906m0-3.984C16.937 47.922 8.1 39.062 8.1 28c0-11.04 8.813-19.922 19.876-19.922c11.039 0 19.921 8.883 19.945 19.922c.023 11.063-8.883 19.922-19.922 19.922m-.023-15.68c1.124 0 1.757-.633 1.78-1.851l.352-12.375c.024-1.196-.914-2.086-2.156-2.086c-1.266 0-2.156.867-2.133 2.062l.305 12.399c.023 1.195.68 1.851 1.852 1.851m0 7.617c1.335 0 2.53-1.078 2.53-2.437c0-1.383-1.171-2.438-2.53-2.438c-1.383 0-2.532 1.078-2.532 2.438c0 1.336 1.172 2.437 2.532 2.437" />
+        </svg>
+        <p>verify your email by click <span class="underline cursor-pointer" @click="verifyEmail()">here</span></p>
+    </div>
+    <div class="flex" :class="{ ' pt-12': !isVerified }">
         <div class="w-64 fixed flex">
             <div class="w-full p-5">
                 <h1 class=" font-Manu-Consent text-2xl font-bold text-gray-800 dark:text-gray-200 underline">The Notes
@@ -12,9 +20,9 @@
             </div>
             <USeparator orientation="vertical" class="h-svh" />
         </div>
-        <div class="pl-64 w-screen">
+        <div class="pl-64 w-screen ">
             <div
-                class="flex justify-between py-5 items-center px-5 left-64 right-0 fixed border-b-main-200 dark:border-b-main-950 border-b bg-main-50 dark:bg-main-900">
+                class="flex justify-between py-5 items-center px-5 left-64 right-0 fixed border-b-main-200 dark:border-b-main-950 border-b bg-main-50 dark:bg-main-900 z-10">
                 <h2 v-show="checkLinkName('home')" class="font-bold">All Notes</h2>
                 <h2 v-show="checkLinkName('archived')" class="font-bold">All Archived Notes</h2>
                 <h2 v-show="checkLinkName('setting')" class="font-bold">Settings</h2>
@@ -42,7 +50,22 @@
     </div>
 </template>
 <script setup lang="ts">
+import { sendVerificationEmail, getSession } from '~/lib/auth-client'
+
+const toast = useToast()
+
 const input = useTemplateRef('input')
+
+const userCredential = ref();
+const isVerified = ref(true);
+
+onBeforeMount(async () => {
+    const { data } = await getSession();
+    if (data) {
+        userCredential.value = data.user;
+        isVerified.value = data.user.emailVerified;
+    }
+})
 
 defineShortcuts({
     '/': () => {
@@ -51,5 +74,30 @@ defineShortcuts({
 })
 
 const checkLinkName = (name: string) => (useRoute().name as string)?.split('-')[0] == name
+
+const verifyEmail = async () => {
+    if (userCredential.value) {
+        const result = await sendVerificationEmail({
+            email: userCredential.value.email,
+            callbackURL: "/home",
+        });
+
+        if (result.data) {
+            return toast.add({
+                title: 'Successfully Sent.',
+                description: 'Link verification has sent to your email.',
+                icon: 'qlementine-icons:success-12',
+                color: "primary"
+            })
+        }
+    }
+
+    return toast.add({
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem with your request.',
+        icon: 'material-symbols-light:info-outline',
+        color: "primary"
+    })
+}
 
 </script>

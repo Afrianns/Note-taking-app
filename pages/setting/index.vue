@@ -15,7 +15,7 @@
 import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui';
 
 const mode = useColorMode()
-const radioValue = ref<RadioGroupValue>('light')
+const radioValue = ref<RadioGroupValue>('system')
 
 onMounted(() => {
     mode.preference = radioValue.value as string;

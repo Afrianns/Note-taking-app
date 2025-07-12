@@ -36,7 +36,7 @@
         </ul>
 
         <UFormField label="Confirm Password" name="confirm">
-            <UInput v-model="stateAcc.confirmPassword" placeholder="Password" :type="show ? 'text' : 'password'"
+            <UInput v-model="stateAcc.confirmPassword" placeholder="Password" :type="show[1] ? 'text' : 'password'"
                 :ui="{ trailing: 'pe-1' }" required class="w-full">
                 <template #trailing>
                     <UButton color="neutral" variant="link" size="sm"
@@ -51,6 +51,8 @@
 <script setup lang="ts">
 
 const props = defineProps(['stateAcc'])
+
+const emit = defineEmits(["password-score"])
 
 const show = ref([false, false])
 
@@ -69,6 +71,7 @@ const strength = computed(() => checkStrength(props.stateAcc.password))
 const score = computed(() => strength.value.filter(req => req.met).length)
 
 const color = computed(() => {
+    emit('password-score', score.value);
     if (score.value === 0) return 'primary'
     if (score.value <= 1) return 'error'
     if (score.value <= 2) return 'warning'

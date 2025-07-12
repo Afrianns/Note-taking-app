@@ -17,6 +17,18 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
+      sendChangeEmailVerification: async (
+        { user, newEmail, url, token },
+        request
+      ) => {
+        const res = await resend.emails.send({
+          from: "Afrianns <onboarding@resend.dev>",
+          to: user.email,
+          subject: "Change Email - Note App",
+          html: `Click this link to change your email <a href='${url}' style='text-decoration: underline'>here</a>`,
+        });
+        console.log(res);
+      },
     },
   },
   emailVerification: {
@@ -24,8 +36,8 @@ export const auth = betterAuth({
       const res = await resend.emails.send({
         from: "Afrianns <onboarding@resend.dev>",
         to: user.email,
-        subject: "Change Email - Note App",
-        html: `Click this link to change your email<strong>${url}!</strong>`,
+        subject: "Verification Email - Note App",
+        html: `Click this link to verify your email <a href='${url}' style='text-decoration: underline'>here</a>`,
       });
 
       console.log(res);

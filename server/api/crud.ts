@@ -2,18 +2,18 @@
 
 import { db } from "../db/db";
 
-import { note, tag } from "../schema/note-schema";
+// import { auth } from "../schema/auth-schema";
 // import { count, eq } from "drizzle-orm";
 
 // const { databaseUrl } = useRuntimeConfig();
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-  const result = await db.insert(tag).values({
-    name: data.name,
-  })
+  // const result = await db.insert(tag).values({
+  //   name: data.name,
+  // })
 
-  return result;
+  // return result;
 
   // if ((await checkIfExist(data.username)) > 0) {
   //   return "username already exist";
