@@ -2,9 +2,20 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   devtools: { enabled: true },
-  modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/ui"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/icon",
+    "@nuxt/ui",
+    "@pinia/nuxt",
+  ],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
     databaseUrl: import.meta.env.NUXT_DATABASE_URL,
+  },
+  routeRules: {
+    "/home": { isr: true },
+    "/archived": { isr: true },
+    "/setting": { ssr: true },
+    "/setting/*": { ssr: false },
   },
 });

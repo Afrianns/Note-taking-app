@@ -24,8 +24,21 @@ export const auth = betterAuth({
         const res = await resend.emails.send({
           from: "Afrianns <onboarding@resend.dev>",
           to: user.email,
-          subject: "Change Email - Note App",
-          html: `Click this link to change your email <a href='${url}' style='text-decoration: underline'>here</a>`,
+          subject: "Verify Change Email - Note App",
+          html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FAF7F3; height: 100vh;">
+                <div style="padding:20px; background: #004030"></div>
+                <h1 style="color: #333; text-align: center;">The Note Inc!</h1>
+              <div style="background-color: #4A9782; border: 1px solid #FCECDD; padding: 20px; border-radius: 5px; margin: 10%;">
+              <p style="font-size: 1.6rem; margin-bottom: 1rem; color: #fff; font-weight: 600;">Hi, ${user.name}</p>
+              <p style="margin: 0; color: #fff;">To update email to <span style='text-decoration: underline; color: #FEFAE0;'>${newEmail}</span>. Please click link <a href='${url}' style='text-decoration: underline; color: #FEFAE0;'>here</a>.</p>
+                <div style="border-top: 1px solid red; border-color: #D2C1B6; font-size: 10px; color: #eee; margin-top: 1rem; margin-bottom: 1rem">
+                    <p style="font-weight: 600; margin-top: 1rem">Doesn't work? Use link below</p>      
+                      <span style='text-decoration: underline; color: #FEFAE0;'>${url}</span>
+                </div>
+              </div>
+            </div>
+            `,
         });
         console.log(res);
       },
@@ -37,7 +50,20 @@ export const auth = betterAuth({
         from: "Afrianns <onboarding@resend.dev>",
         to: user.email,
         subject: "Verification Email - Note App",
-        html: `Click this link to verify your email <a href='${url}' style='text-decoration: underline'>here</a>`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FAF7F3; height: 100vh;">
+            <div style="padding:20px; background: #004030"></div>
+            <h1 style="color: #333; text-align: center;">The Note Inc!</h1>
+          <div style="background-color: #4A9782; border: 1px solid #FCECDD; padding: 20px; border-radius: 5px; margin: 10%;">
+          <p style="font-size: 1.6rem; margin-bottom: 1rem; color: #fff; font-weight: 600;">Hi, ${user.name}</p>
+          <p style="margin: 0; color: #fff;">Click this link to verify your email <a href='${url}' style='text-decoration: underline; color: #FEFAE0;'>here</a>.</p>
+            <div style="border-top: 1px solid red; border-color: #D2C1B6; font-size: 10px; color: #eee; margin-top: 1rem; margin-bottom: 1rem">
+                <p style="font-weight: 600; margin-top: 1rem">Doesn't work? Copy link below</p>      
+                <span style='text-decoration: underline; color: #FEFAE0;'>${url}</span>
+            </div>
+          </div>
+        </div>
+        `,
       });
 
       console.log(res);

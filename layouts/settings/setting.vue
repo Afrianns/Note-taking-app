@@ -78,7 +78,3 @@ const logoutFunction = () => {
     });
 }
 </script>
-
-<!-- 
-
- -->
