@@ -1,6 +1,11 @@
 <template>
     <NuxtLayout name="notes-note">
-        <span v-on:click="saveTag()">click me</span>
+        <div class="flex justify-center flex-col items-center gap-y-3 w-full text-gray-400 dark:text-main-700">
+            <UIcon name="mage:note" :size="100" />
+            <p>
+                Pour your ideas, moments, memories into story
+            </p>
+        </div>
     </NuxtLayout>
 </template>
 <script setup lang="ts">
@@ -13,12 +18,6 @@ const saveTag = async () => {
     });
 
     console.log('check', data)
-    // const result = await $fetch("/api/crud", {
-    //     method: "POST",
-    //     body: {
-    //         name: "jackson",
-    //     }
-    // });
-    // console.log(result)
 }
+
 </script>

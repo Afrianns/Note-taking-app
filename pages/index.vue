@@ -165,7 +165,7 @@ const sendLoginData = async () => {
     await signIn.email({
         email: stateLogin.email,
         password: stateLogin.password,
-        callbackURL: "/home",
+        callbackURL: "/dashboard",
         rememberMe: false
     }, {
         onRequest: (ctx) => {
@@ -188,7 +188,7 @@ const sendRegisterData = async () => {
         email: stateRegister.email,
         password: stateRegister.password,
         name: stateRegister.name,
-        callbackURL: "/home"
+        callbackURL: "/dashboard"
     }, {
         onRequest: (ctx) => {
             //show loading

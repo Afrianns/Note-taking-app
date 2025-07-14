@@ -1,5 +1,5 @@
 {
-  "id": "bc3d6a66-6d51-49f1-8d3e-1a6fe05fccb2",
+  "id": "ad0183fe-ef0d-4444-983b-aecbc64b70e2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -24,7 +24,7 @@
           "name": "content",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "user_id": {
           "name": "user_id",
@@ -68,8 +68,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "notes.tag_notes ": {
-      "name": "tag_notes ",
+    "notes.tag_notes": {
+      "name": "tag_notes",
       "schema": "notes",
       "columns": {
         "id": {
@@ -100,9 +100,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tag_notes _tag_id_tags_id_fk": {
-          "name": "tag_notes _tag_id_tags_id_fk",
-          "tableFrom": "tag_notes ",
+        "tag_notes_tag_id_tags_id_fk": {
+          "name": "tag_notes_tag_id_tags_id_fk",
+          "tableFrom": "tag_notes",
           "tableTo": "tags",
           "schemaTo": "notes",
           "columnsFrom": [
@@ -114,9 +114,9 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "tag_notes _note_id_notes_id_fk": {
-          "name": "tag_notes _note_id_notes_id_fk",
-          "tableFrom": "tag_notes ",
+        "tag_notes_note_id_notes_id_fk": {
+          "name": "tag_notes_note_id_notes_id_fk",
+          "tableFrom": "tag_notes",
           "tableTo": "notes",
           "schemaTo": "notes",
           "columnsFrom": [

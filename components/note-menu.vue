@@ -1,9 +1,10 @@
 <template>
     <ul class="my-5 flex flex-col gap-y-3">
         <li>
-            <nuxt-link to="/home" class="flex justify-between items-center py-2 px-3 rounded-md cursor-pointer" :class="{
-                'bg-main-300 dark:bg-main-950 ': $route.name == 'home'
-            }">
+            <nuxt-link to="/dashboard" class="flex justify-between items-center py-2 px-3 rounded-md cursor-pointer"
+                :class="{
+                    'bg-main-300 dark:bg-main-950 ': $route.name == 'dashboard' || $route.name == 'dashboard-id'
+                }">
                 <div class="flex items-center gap-x-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                         <path fill="currentColor"

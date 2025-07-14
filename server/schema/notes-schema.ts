@@ -1,7 +1,6 @@
 import {
   integer,
   pgSchema,
-  pgTable,
   serial,
   text,
   timestamp,
@@ -17,7 +16,7 @@ export const tags = noteSchema.table("tags", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const tag_notes = noteSchema.table("tag_notes ", {
+export const tag_notes = noteSchema.table("tag_notes", {
   id: serial("id").primaryKey(),
   tagId: integer("tag_id")
     .notNull()
@@ -30,7 +29,7 @@ export const tag_notes = noteSchema.table("tag_notes ", {
 export const notes = noteSchema.table("notes", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  content: text("content").notNull(),
+  content: text("content"),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

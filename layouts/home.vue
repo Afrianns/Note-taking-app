@@ -5,7 +5,8 @@
             <path fill="currentColor"
                 d="M28 51.906c13.055 0 23.906-10.828 23.906-23.906c0-13.055-10.875-23.906-23.93-23.906C14.899 4.094 4.095 14.945 4.095 28c0 13.078 10.828 23.906 23.906 23.906m0-3.984C16.937 47.922 8.1 39.062 8.1 28c0-11.04 8.813-19.922 19.876-19.922c11.039 0 19.921 8.883 19.945 19.922c.023 11.063-8.883 19.922-19.922 19.922m-.023-15.68c1.124 0 1.757-.633 1.78-1.851l.352-12.375c.024-1.196-.914-2.086-2.156-2.086c-1.266 0-2.156.867-2.133 2.062l.305 12.399c.023 1.195.68 1.851 1.852 1.851m0 7.617c1.335 0 2.53-1.078 2.53-2.437c0-1.383-1.171-2.438-2.53-2.438c-1.383 0-2.532 1.078-2.532 2.438c0 1.336 1.172 2.437 2.532 2.437" />
         </svg>
-        <p>Send verification to your email by clicking <span class="underline cursor-pointer" @click="verifyEmail()">here</span></p>
+        <p>Send verification to your email by clicking <span class="underline cursor-pointer"
+                @click="verifyEmail()">here</span></p>
     </div>
     <div class="flex" :class="{ ' pt-12': !user.credential.emailVerified }">
         <div class="w-64 fixed flex">
@@ -23,7 +24,7 @@
         <div class="pl-64 w-screen ">
             <div
                 class="flex justify-between py-5 items-center px-5 left-64 right-0 fixed border-b-main-200 dark:border-b-main-950 border-b bg-main-50 dark:bg-main-900 z-10">
-                <h2 v-show="checkLinkName('home')" class="font-bold">All Notes</h2>
+                <h2 v-show="checkLinkName('dashboard')" class="font-bold">All Notes</h2>
                 <h2 v-show="checkLinkName('archived')" class="font-bold">All Archived Notes</h2>
                 <h2 v-show="checkLinkName('setting')" class="font-bold">Settings</h2>
                 <div class="flex items-center gap-x-3">
@@ -71,7 +72,7 @@ const verifyEmail = async () => {
     if (user.credential) {
         const result = await sendVerificationEmail({
             email: user.credential.email,
-            callbackURL: "/home",
+            callbackURL: "/dashboard",
         });
 
         if (result.data) {

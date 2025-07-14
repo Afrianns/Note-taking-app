@@ -1,6 +1,7 @@
 // import { neon } from "@neondatabase/serverless";
 
 import { db } from "../db/db";
+import { notes } from "../schema/notes-schema";
 
 // import { auth } from "../schema/auth-schema";
 // import { count, eq } from "drizzle-orm";
@@ -9,9 +10,20 @@ import { db } from "../db/db";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-  // const result = await db.insert(tag).values({
-  //   name: data.name,
-  // })
+  try {
+    const result = await db
+      .insert(notes)
+      .values({
+        userId: data.userId,
+        title: data.title,
+      })
+      .execute();
+    return result;
+  } catch (err: any) {
+    throw createError({ statusCode: 500, statusMessage: err.message });
+  }
+
+  // return result;
 
   // return result;
 
