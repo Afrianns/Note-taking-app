@@ -28,6 +28,7 @@ export const useSessionStore = defineStore("sessionStore", {
   actions: {
     async getUserCredential() {
       const { data } = await getSession();
+      console.log(data)
       if (data) {
         this.credential = data.user;
         this.getCurrentNoteUser(data.user.id);

@@ -21,11 +21,11 @@
                         </template>
                     </UModal>
                     <div class="my-5">
-                        <template v-for="note in user.notes">
+                        <template v-if="storage.notes.length > 0" v-for="(note, idx) in storage.notes" :key="idx">
                             <USeparator />
-                            <nuxt-link :to="'/dashboard/' + note.id"
+                            <nuxt-link :to="'/dashboard/' + idx + '_' + note.id"
                                 class="p-3 rounded-md  space-y-2 cursor-pointer block"
-                                :class="{ 'bg-main-300 dark:bg-main-950': note.id as unknown as string == $route.params.id }">
+                                :class="{ 'bg-main-300 dark:bg-main-950': `${idx}_${note.id}` == $route.params.id }">
                                 <h2 class="font-bold text-xl">{{ note.title }}</h2>
                                 <div class="flex gap-x-2">
                                     <span
@@ -33,9 +33,22 @@
                                     <span
                                         class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">daily</span>
                                 </div>
-                                <span class="text-muted text-xs font-medium">{{ convertDate(note.createdAt) }}</span>
+                                <span class="text-muted text-xs font-medium">{{ useConvertDate(note.createdAt) }}</span>
                             </nuxt-link>
                         </template>
+
+                        <template v-else v-for="id in [1, 2, 3]" :key="id">
+                            <USeparator class="my-3" />
+                            <section>
+                                <USkeleton class="h-10 w-full" />
+                                <div class="flex gap-x-2 my-3">
+                                    <USkeleton class="h-5 w-10" />
+                                    <USkeleton class="h-5 w-10" />
+                                </div>
+                                <USkeleton class="h-5 w-28" />
+                            </section>
+                        </template>
+
                     </div>
                 </div>
                 <USeparator orientation="vertical" class="h-screen" />
@@ -57,10 +70,15 @@
 </template>
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '@nuxt/ui'
-import { useSessionStore } from '~/store/storage'
 const toast = useToast()
 
-const user = useSessionStore();
+const storage = useUserData()
+
+const total = ref(0);
+
+onMounted(() => {
+    total.value = storage.notes.length;
+})
 
 const open = ref(false)
 const state = reactive({
@@ -89,29 +107,11 @@ const createInitialNote = async (title: string) => {
     const result = await $fetch("/api/initialNote", {
         method: "POST",
         body: {
-            userId: user.credential.id,
+            userId: storage.credential.id,
             title: title,
         }
     })
     console.log(result)
 }
 
-const convertDate = (date: Date) => {
-    const toDate = new Date(date);
-    const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"]
-
-    return `${toDate.getDate()} ${months[toDate.getMonth()]} ${toDate.getFullYear()}`
-}
 </script>
