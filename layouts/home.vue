@@ -49,8 +49,13 @@
 </template>
 <script setup lang="ts">
 import { sendVerificationEmail } from '~/lib/auth-client'
+import { useSessionStore } from '~/store/storage';
 
-let user = useUserData();
+let storage = useSessionStore();
+
+if (!storage.credential.id) {
+    storage.getUserCredential();
+}
 
 const input = useTemplateRef('input')
 
@@ -65,9 +70,9 @@ defineShortcuts({
 const checkLinkName = (name: string) => (useRoute().name as string)?.split('-')[0] == name
 
 const verifyEmail = async () => {
-    if (user.credential) {
+    if (storage.credential) {
         const result = await sendVerificationEmail({
-            email: user.credential.email,
+            email: storage.credential.email,
             callbackURL: "/dashboard",
         });
 

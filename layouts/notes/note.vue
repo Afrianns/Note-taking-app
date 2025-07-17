@@ -22,7 +22,7 @@
                     </UModal>
                     <div class="my-5">
                         <template v-if="storage.notes.length > 0" v-for="(note, idx) in storage.notes" :key="idx">
-                            <USeparator />
+                            <USeparator class="my-3" />
                             <nuxt-link :to="'/dashboard/' + idx + '_' + note.id"
                                 class="p-3 rounded-md  space-y-2 cursor-pointer block"
                                 :class="{ 'bg-main-300 dark:bg-main-950': `${idx}_${note.id}` == $route.params.id }">
@@ -48,7 +48,6 @@
                                 <USkeleton class="h-5 w-28" />
                             </section>
                         </template>
-
                     </div>
                 </div>
                 <USeparator orientation="vertical" class="h-screen" />
@@ -70,15 +69,11 @@
 </template>
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '@nuxt/ui'
+
+import { useSessionStore } from '~/store/storage';
 const toast = useToast()
 
-const storage = useUserData()
-
-const total = ref(0);
-
-onMounted(() => {
-    total.value = storage.notes.length;
-})
+const storage = useSessionStore();
 
 const open = ref(false)
 const state = reactive({
@@ -89,7 +84,6 @@ const state = reactive({
 const validate = (state: any): FormError[] => {
     const errors = []
     if (!state.title) errors.push({ name: 'title', message: 'Title is Required' })
-    // if (!state.tags) errors.push({ name: 'tags', message: 'Required' })
     return errors
 }
 

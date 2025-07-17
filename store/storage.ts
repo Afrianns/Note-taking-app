@@ -35,6 +35,7 @@ export const useSessionStore = defineStore("sessionStore", {
       }
     },
     async getCurrentNoteUser(userId: string) {
+      
       const result = await $fetch("/api/allNote", {
         method: "POST",
         body: {

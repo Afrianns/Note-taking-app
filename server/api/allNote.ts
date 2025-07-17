@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
       updatedAt: notes.updatedAt,
     })
     .from(user)
-    .rightJoin(notes, eq(data.userId, notes.userId))
+    .rightJoin(notes, eq(notes.userId, data.userId))
     .execute();
 
   return result;

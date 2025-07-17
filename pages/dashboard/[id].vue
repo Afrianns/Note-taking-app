@@ -40,10 +40,11 @@
 </template>
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-
+import { useSessionStore } from '~/store/storage';
 
 const route = useRoute()
-const storage = useUserData()
+
+const storage = useSessionStore();
 
 const toast = useToast()
 

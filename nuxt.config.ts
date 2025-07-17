@@ -7,9 +7,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     databaseUrl: import.meta.env.NUXT_DATABASE_URL,
   },
-  routeRules: {
-    "/archived": { ssr: false },
-    "/setting": { ssr: true },
-    "/setting/*": { ssr: false },
-  },
+  // routeRules: {
+  //   "/archived": { ssr: false },
+  //   "/setting": { ssr: true },
+  //   "/setting/*": { ssr: false },
+  // },
 });
