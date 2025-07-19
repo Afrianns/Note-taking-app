@@ -1,7 +1,7 @@
 // import { neon } from "@neondatabase/serverless";
 
-import { db } from "../db/db";
-import { notes } from "../schema/notes-schema";
+import { db } from "~/server/db/db";
+import { notes } from "~/server/schema/notes-schema";
 
 // import { auth } from "../schema/auth-schema";
 // import { count, eq } from "drizzle-orm";
@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
         userId: data.userId,
         title: data.title,
       })
+      .returning()
       .execute();
     return result;
   } catch (err: any) {

@@ -1,5 +1,5 @@
 {
-  "id": "ad0183fe-ef0d-4444-983b-aecbc64b70e2",
+  "id": "ebcb6e19-5f60-4b29-822b-7e374ec3635c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -31,6 +31,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "isArchived": {
+          "name": "isArchived",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "created_at": {
           "name": "created_at",
@@ -89,6 +96,12 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "sim": {
+          "name": "sim",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

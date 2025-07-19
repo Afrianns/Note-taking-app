@@ -4,6 +4,7 @@ import {
   serial,
   text,
   timestamp,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth-schema";
@@ -24,6 +25,7 @@ export const tag_notes = noteSchema.table("tag_notes", {
   noteId: integer("note_id")
     .notNull()
     .references(() => notes.id, { onDelete: "cascade" }),
+  sim: text("sim"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 export const notes = noteSchema.table("notes", {
@@ -33,6 +35,7 @@ export const notes = noteSchema.table("notes", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  isArchived: boolean().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

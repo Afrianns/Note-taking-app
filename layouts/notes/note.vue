@@ -1,11 +1,11 @@
 <template>
     <UApp>
-        <NuxtLayout name="home">
+        <NuxtLayout name="home" v-slot="searching">
             <div class="flex">
-                <div class="p-5 pl-5 w-full max-w-[18rem] mt-18">
-                    <UModal v-model:open="open" title="Create New Note" description="Get starter with your note."
-                        :ui="{ footer: 'justify-end' }">
-                        <UButton class="w-full text-center block">+ New Note</UButton>
+                <div class="p-5 pl-5 w-full max-w-[18rem] mt-18 h-[calc(100vh-78px)]">
+                    <UModal v-model:open="openCreateInitialNote" title="Create New Note"
+                        description="Get starter with your note." :ui="{ footer: 'justify-end' }">
+                        <UButton class="w-full text-center block ">+ New Note</UButton>
                         <template #body>
                             <UForm :validate="validate" :state="state" class="space-y-4" @submit="onSubmit">
                                 <UFormField label="Title" name="title" required class="w-full">
@@ -20,8 +20,9 @@
                             </UForm>
                         </template>
                     </UModal>
-                    <div class="my-5">
-                        <template v-if="storage.notes.length > 0" v-for="(note, idx) in storage.notes" :key="idx">
+                    <div class="my-5 h-[calc(100vh-150px)] overflow-y-auto">
+                        <template v-if="storage.notesExist == noteExistType.EXIST && storage.notes.length > 0"
+                            v-for="(note, idx) in filteringSearch(storage.notes, searching)" :key="idx">
                             <USeparator class="my-3" />
                             <nuxt-link :to="'/dashboard/' + idx + '_' + note.id"
                                 class="p-3 rounded-md  space-y-2 cursor-pointer block"
@@ -35,6 +36,10 @@
                                 </div>
                                 <span class="text-muted text-xs font-medium">{{ useConvertDate(note.createdAt) }}</span>
                             </nuxt-link>
+                        </template>
+
+                        <template v-else-if="storage.notesExist == noteExistType.NOTEXIST">
+                            <p class="text-center text-muted">There are no notes</p>
                         </template>
 
                         <template v-else v-for="id in [1, 2, 3]" :key="id">
@@ -59,9 +64,21 @@
                     <UButton icon="material-symbols:archive-outline" color="neutral" variant="outline" size="lg" block
                         :ui="{ base: 'w-full' }">
                         Archived Note</UButton>
-                    <UButton icon="tabler:trash" color="neutral" variant="outline" size="lg" class="text-center" block
-                        :ui="{ base: 'w-full' }">
-                        Delete Note</UButton>
+                    <UModal v-model:open="openConfirmationDelete" title="Delete Note"
+                        description="Confirmation Delete Note" :ui="{ footer: 'justify-end' }">
+
+                        <UButton icon="tabler:trash" color="neutral" variant="outline" size="lg" class="text-center"
+                            block :ui="{ base: 'w-full' }">
+                            Delete Note</UButton>
+                        <template #body>
+                            <h1>ARE YOU SURE WANT TO DELETE THIS NOTE?</h1>
+                        </template>
+
+                        <template #footer="{ close }">
+                            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
+                            <UButton label="Submit" color="neutral" @click="deleteNote($route.params.id as string)" />
+                        </template>
+                    </UModal>
                 </div>
             </div>
         </NuxtLayout>
@@ -69,13 +86,19 @@
 </template>
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '@nuxt/ui'
+import { type noteType, noteExistType } from "~/types/types"
 
 import { useSessionStore } from '~/store/storage';
 const toast = useToast()
 
+const slotData = defineSlots();
+
 const storage = useSessionStore();
 
-const open = ref(false)
+type noteKey = keyof noteType;
+
+const openCreateInitialNote = ref(false)
+const openConfirmationDelete = ref(false)
 const state = reactive({
     title: undefined,
     tags: undefined
@@ -88,7 +111,6 @@ const validate = (state: any): FormError[] => {
 }
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
-    toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
     console.log(event.data)
 
     if (event.data.title) {
@@ -96,16 +118,51 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     }
 }
 
+const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => {
+    if (searchQuery.search.trim() != '') {
+
+        let result = notes.filter((row) => {
+            return Object.keys(row).some((idx) => {
+                return String(row[idx as noteKey]).toLowerCase().indexOf(searchQuery.search.toLowerCase()) > -1
+            })
+        })
+        return result;
+    } else {
+        return notes;
+    }
+}
+
+const deleteNote = async (id: string) => {
+    const result = await $fetch("/api/note/deleteNote", {
+        method: "POST",
+        body: {
+            noteId: id.split("_")[1],
+        }
+    })
+
+    openConfirmationDelete.value = false;
+    if (result) {
+        storage.notes.splice(id.split("_")[0] as unknown as number, 1);
+        navigateTo("/dashboard")
+        toast.add({ title: 'Success', description: 'The note has been deleted.', color: 'success' })
+    }
+}
+
 const createInitialNote = async (title: string) => {
 
-    const result = await $fetch("/api/initialNote", {
+    const result = await $fetch("/api/note/createInitialNote", {
         method: "POST",
         body: {
             userId: storage.credential.id,
             title: title,
         }
     })
-    console.log(result)
+
+    if (result.length > 0) {
+        toast.add({ title: 'Success', description: 'The note has been created.', color: 'success' })
+        openCreateInitialNote.value = false;
+        storage.notes.push(result[0] as unknown as noteType);
+    }
 }
 
 </script>

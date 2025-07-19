@@ -28,7 +28,7 @@
                 <h2 v-show="checkLinkName('archived')" class="font-bold">All Archived Notes</h2>
                 <h2 v-show="checkLinkName('setting')" class="font-bold">Settings</h2>
                 <div class="flex items-center gap-x-3">
-                    <UInput ref="input" icon="i-lucide-search" placeholder="Search...">
+                    <UInput ref="input" icon="i-lucide-search" placeholder="Search..." v-model="searchQuery">
                         <template #trailing>
                             <UKbd value="/" />
                         </template>
@@ -43,7 +43,7 @@
                     </nuxt-link>
                 </div>
             </div>
-            <slot />
+            <slot :search="searchQuery" />
         </div>
     </div>
 </template>
@@ -56,6 +56,8 @@ let storage = useSessionStore();
 if (!storage.credential.id) {
     storage.getUserCredential();
 }
+
+const searchQuery = ref('');
 
 const input = useTemplateRef('input')
 

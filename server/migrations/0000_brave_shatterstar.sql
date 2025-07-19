@@ -3,6 +3,7 @@ CREATE TABLE "notes"."notes" (
 	"title" text NOT NULL,
 	"content" text,
 	"user_id" text NOT NULL,
+	"isArchived" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp NOT NULL
 );
@@ -11,6 +12,7 @@ CREATE TABLE "notes"."tag_notes" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"tag_id" integer NOT NULL,
 	"note_id" integer NOT NULL,
+	"sim" text,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
