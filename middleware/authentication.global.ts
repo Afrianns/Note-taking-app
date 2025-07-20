@@ -1,13 +1,7 @@
 import { useSession } from "~/lib/auth-client";
-import { useSessionStore } from "~/store/storage";
 
-enum noteExistType {
-    DEFAULT,
-    NOTEXIST,
-    EXIST,
-}
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { data: session } = await useSession(useFetch);
+  const session = await useSession();
 
   console.log(to.path);
 

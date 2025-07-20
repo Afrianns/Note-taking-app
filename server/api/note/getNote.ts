@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
-import { db } from "../db/db";
-import { user } from "../schema/auth-schema";
-import { notes } from "../schema/notes-schema";
+import { db } from "../../db/db";
+import { user } from "../../schema/auth-schema";
+import { notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
     })
     .from(user)
     .rightJoin(notes, eq(notes.userId, data.userId))
+    .where(eq(notes.isArchived, false))
     .execute();
 
   return result;

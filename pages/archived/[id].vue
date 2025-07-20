@@ -1,9 +1,8 @@
 <template>
     <NuxtLayout name="notes-note">
-        <UForm :state="state" class="w-full flex flex-col justify-between" @submit="onSubmit">
+        <div class="w-full flex flex-col justify-between">
             <section>
-                <UInput v-if="storage.notes.length > 0" class="text-4xl font-bold w-full" size="xl"
-                    :ui="{ base: 'p-0 ring-0 focus-visible:ring-0 text-3xl' }" v-model="state.title" />
+                <h1 v-if="storage.archivedNotes.length > 0" class="text-4xl font-bold w-full">{{ state.title }}</h1>
                 <USkeleton v-else class="h-9 w-full max-w-[20rem]" />
                 <div class="my-5 space-y-3">
                     <section class="flex items-center">
@@ -18,15 +17,14 @@
                             <UIcon name="mingcute:time-line" :size="25" />
                             <p>Last Edited</p>
                         </div>
-                        <p v-if="storage.notes.length > 0">{{ useConvertDate(getValueBaseOnId(route.params.id as
+                        <p v-if="storage.archivedNotes.length > 0">{{ useConvertDate(getValueBaseOnId(route.params.id as
                             string)?.updatedAt)
-                            }}</p>
+                        }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>
                 <USeparator />
-                <UTextarea v-if="storage.notes.length > 0" :rows="12" v-model="state.content" class="w-full py-5"
-                    :highlight="false" :autoresize="true" :ui="{ base: 'ring-0 focus-visible:ring-0' }" />
+                <p v-if="storage.archivedNotes.length > 0" class="w-full py-5">{{ state.content }}</p>
                 <div v-else class="space-y-2 mt-2">
                     <USkeleton class="h-5 w-full" />
                     <USkeleton class="h-5 w-full" />
@@ -36,18 +34,28 @@
             <section>
                 <USeparator />
                 <div class="flex justify-start gap-x-5 items-center mt-5">
-                    <UButton label="Save" type="submit" />
-                    <UButton label="Cancel" color="neutral" variant="soft"
-                        @click="resetToPrevSaved($route.params.id as string)" />
+                    <UModal v-model:open="openConfirmationUnarchived" title="Unarchived Note"
+                        description="Confirmation Unarchived Note" :ui="{ footer: 'justify-end' }">
+
+                        <UButton label="Unarchived Note" />
+                        <template #body>
+                            <h1>ARE YOU SURE WANT TO DELETE THIS NOTE?</h1>
+                        </template>
+
+                        <template #footer="{ close }">
+                            <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
+                            <UButton label="Confirm" color="neutral"
+                                @click="restoreArchivedNote($route.params.id as string)" />
+                        </template>
+                    </UModal>
                 </div>
             </section>
-        </UForm>
+        </div>
     </NuxtLayout>
 </template>
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@nuxt/ui'
 import { useSessionStore } from '~/store/storage'
-import { noteExistType, type noteType } from "~/types/types"
+import { notesArchivedExistType, type noteType } from "~/types/types"
 
 const route = useRoute()
 
@@ -55,9 +63,11 @@ const storage = useSessionStore();
 
 const toast = useToast()
 
+const openConfirmationUnarchived = ref(false)
+
 const getValueBaseOnId = (uuid: string) => {
     const id = uuid.split("_")[0];
-    return storage.notes[id as unknown as number]
+    return storage.archivedNotes[id as unknown as number]
 }
 
 const getValue = () => getValueBaseOnId(route.params.id as string)
@@ -68,58 +78,36 @@ const state = reactive({
     content: getValue()?.content
 })
 
-watch(() => storage.notesExist, (data) => {
+watch(() => storage.notesArchivedExist, (data) => {
 
-    if (storage.notesExist == noteExistType.NOTEXIST) {
+    if (storage.notesArchivedExist == notesArchivedExistType.NOTEXIST) {
         navigateTo('/dashboard');
     }
 })
 
-// if (storage.notesExist == noteExistType.NOTEXIST) {
-//     console.log("check")
-// }
-
 const noteId = () => (route.params.id as string).split("_")[0] as unknown as number;
-
-// wathc for content, title, and tags
-watch(() => state.content, (data) => storage.notes[noteId()].content = data)
-watch(() => state.title, (data) => storage.notes[noteId()].title = data)
 
 
 // load first time since data async
-watch(() => storage.notes, () => {
+watch(() => storage.archivedNotes, () => {
     state.title = getValue()?.title
     state.content = getValue()?.content
 })
 
 
-async function onSubmit(event: FormSubmitEvent<typeof state>) {
+const restoreArchivedNote = async (id: string) => {
 
-    const result = await $fetch("/api/note/createCompletedNote", {
-        method: "POST",
-        body: {
-            id: storage.notes[noteId()].id,
-            title: event.data.title,
-            content: event.data.content
-        }
-    })
-
-    toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
-}
-
-const resetToPrevSaved = async (id: string) => {
-
-    const result = await $fetch("/api/note/getSingleNote", {
+    const result = await $fetch("/api/note/archivedNote", {
         method: "POST",
         body: {
             noteId: id.split("_")[1],
         }
     })
 
-    if (result) {
-        storage.notes[noteId()] = result[0] as unknown as noteType
-        state.title = result[0].title
-        state.content = result[0].content
+    if (!result[1]) {
+        storage.archivedNotes.splice(id.split("_")[0] as unknown as number, 1);
+        navigateTo("/archived")
+        toast.add({ title: 'Success', description: 'The note has been unarchived.', color: 'success' })
     }
 }
 </script>

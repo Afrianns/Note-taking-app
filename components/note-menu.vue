@@ -12,8 +12,8 @@
                     </svg>
                     <p>All Notes</p>
                 </div>
-                <svg v-show="$route.name == 'home'" xmlns="http://www.w3.org/2000/svg" width="8" height="16"
-                    viewBox="0 0 12 24">
+                <svg v-show="$route.name == 'dashboard' || $route.name == 'dashboard-id'"
+                    xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 12 24">
                     <path fill="currentColor" fill-rule="evenodd"
                         d="M10.157 12.711L4.5 18.368l-1.414-1.414l4.95-4.95l-4.95-4.95L4.5 5.64l5.657 5.657a1 1 0 0 1 0 1.414" />
                 </svg>
@@ -22,7 +22,7 @@
         <li>
             <nuxt-link to="/archived" class="flex justify-between items-center py-2 px-3 rounded-md cursor-pointer"
                 :class="{
-                    'bg-main-300 dark:bg-main-950': $route.name == 'archived'
+                    'bg-main-300 dark:bg-main-950': $route.name == 'archived' || $route.name == 'archived-id'
                 }">
                 <div class="flex items-center gap-x-3 ">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
@@ -31,8 +31,8 @@
                     </svg>
                     <p>Archived Notes</p>
                 </div>
-                <svg v-show="$route.name == 'archived'" xmlns="http://www.w3.org/2000/svg" width="8" height="16"
-                    viewBox="0 0 12 24">
+                <svg v-show="$route.name == 'archived' || $route.name == 'archived-id'"
+                    xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 12 24">
                     <path fill="currentColor" fill-rule="evenodd"
                         d="M10.157 12.711L4.5 18.368l-1.414-1.414l4.95-4.95l-4.95-4.95L4.5 5.64l5.657 5.657a1 1 0 0 1 0 1.414" />
                 </svg>
