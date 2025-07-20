@@ -42,7 +42,6 @@
                         </svg>
                     </nuxt-link>
                 </div>
-                <p @click="callme()">clickme</p>
             </div>
             <slot :search="searchQuery" />
         </div>
@@ -69,10 +68,6 @@ defineShortcuts({
         input.value?.inputRef?.focus()
     }
 })
-
-const callme = () => {
-    useToast().add({ title: 'Success', description: 'The note has been archived.', color: 'success' })
-}
 
 const checkLinkName = (name: string) => (useRoute().name as string)?.split('-')[0] == name
 

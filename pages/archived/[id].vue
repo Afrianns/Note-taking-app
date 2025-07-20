@@ -19,7 +19,7 @@
                         </div>
                         <p v-if="storage.archivedNotes.length > 0">{{ useConvertDate(getValueBaseOnId(route.params.id as
                             string)?.updatedAt)
-                        }}</p>
+                            }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>
@@ -103,9 +103,11 @@ const restoreArchivedNote = async (id: string) => {
             noteId: id.split("_")[1],
         }
     })
+    let resultArrFirst = result['0' as keyof typeof result]
 
     if (!result[1]) {
-        storage.archivedNotes.splice(id.split("_")[0] as unknown as number, 1);
+        storage.removeArchivedNoteById(id)
+        storage.addNote(resultArrFirst['0' as keyof typeof resultArrFirst] as noteType)
         navigateTo("/archived")
         toast.add({ title: 'Success', description: 'The note has been unarchived.', color: 'success' })
     }

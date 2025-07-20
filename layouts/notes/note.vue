@@ -165,9 +165,12 @@ const archivedNote = async (id: string) => {
         }
     })
 
-    console.log('res', id, result);
+    console.log(result)
+
+    let resultArrFirst = result['0' as keyof typeof result]
     if (result[1]) {
         storage.removeNoteById(id)
+        storage.addArchivedNote(resultArrFirst['0' as keyof typeof resultArrFirst] as noteType)
         navigateTo("/dashboard")
         toast.add({ title: 'Success', description: 'The note has been archived.', color: 'success' })
     }
@@ -192,7 +195,7 @@ const deleteNote = async (id: string, routeName: string) => {
 
         navigateTo(`/${routeName.split('-')[0]}`)
         console.log(storage.notes, storage.archivedNotes, id.split("_"))
-        storage.callToast({ title: 'Success', description: 'The note has been deleted.', color: 'success' })
+        toast.add({ title: 'Success', description: 'The note has been deleted.', color: 'success' })
     }
 }
 
@@ -207,7 +210,7 @@ const createInitialNote = async (title: string) => {
     })
 
     if (result.length > 0) {
-        storage.callToast({ title: 'Success', description: 'The note has been created.', color: 'success' })
+        toast.add({ title: 'Success', description: 'The note has been created.', color: 'success' })
         openCreateInitialNote.value = false;
         storage.notes.push(result[0] as unknown as noteType);
     }

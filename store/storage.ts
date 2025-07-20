@@ -79,8 +79,20 @@ export const useSessionStore = defineStore("sessionStore", {
       }
     },
 
-    callToast(data: any) {
-      useToast().add(data);
+    addNote(data: noteType) {
+      this.notes.push(data);
+
+      if (this.notes.length > 0) {
+        this.notesExist = noteExistType.EXIST;
+      }
+    },
+
+    addArchivedNote(data: noteType) {
+      this.archivedNotes.push(data);
+
+      if (this.archivedNotes.length > 0) {
+        this.notesArchivedExist = notesArchivedExistType.EXIST;
+      }
     },
   },
 });

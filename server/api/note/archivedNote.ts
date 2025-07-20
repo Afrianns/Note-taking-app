@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     .update(notes)
     .set({ isArchived: isArchiving })
     .where(eq(notes.id, data.noteId))
-    .returning({ noteId: notes.id })
+    .returning()
     .execute();
 
   return [result, isArchiving];
