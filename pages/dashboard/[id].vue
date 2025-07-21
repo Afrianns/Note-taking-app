@@ -2,7 +2,7 @@
     <NuxtLayout name="notes-note">
         <UForm :state="state" class="w-full flex flex-col justify-between" @submit="onSubmit">
             <section>
-                <UInput v-if="storage.notes.length > 0" class="text-4xl font-bold w-full" size="xl"
+                <UInput v-if="state" class="text-4xl font-bold w-full" size="xl"
                     :ui="{ base: 'p-0 ring-0 focus-visible:ring-0 text-3xl' }" v-model="state.title" />
                 <USkeleton v-else class="h-9 w-full max-w-[20rem]" />
                 <div class="my-5 space-y-3">
@@ -18,15 +18,13 @@
                             <UIcon name="mingcute:time-line" :size="25" />
                             <p>Last Edited</p>
                         </div>
-                        <p v-if="storage.notes.length > 0">{{ useConvertDate(getValueBaseOnId(route.params.id as
-                            string)?.updatedAt)
-                            }}</p>
+                        <p v-if="state">{{ useConvertDate(state.updatedAt) }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>
                 <USeparator />
-                <UTextarea v-if="storage.notes.length > 0" :rows="12" v-model="state.content" class="w-full py-5"
-                    :highlight="false" :autoresize="true" :ui="{ base: 'ring-0 focus-visible:ring-0' }" />
+                <UTextarea v-if="state" :rows="12" v-model="state.content" class="w-full py-5" :highlight="false"
+                    :autoresize="true" :ui="{ base: 'ring-0 focus-visible:ring-0' }" />
                 <div v-else class="space-y-2 mt-2">
                     <USkeleton class="h-5 w-full" />
                     <USkeleton class="h-5 w-full" />
@@ -64,24 +62,20 @@ const getValue = () => getValueBaseOnId(route.params.id as string)
 
 const state = reactive({
     title: getValue()?.title,
-    tags: "",
-    content: getValue()?.content
+    content: getValue()?.content,
+    updatedAt: getValue()?.updatedAt
 })
 
-watch(() => storage.notesExist, (data) => {
+watch(() => storage.notesExist, () => {
 
     if (storage.notesExist == noteExistType.NOTEXIST) {
         navigateTo('/dashboard');
     }
 })
 
-// if (storage.notesExist == noteExistType.NOTEXIST) {
-//     console.log("check")
-// }
-
 const noteId = () => (route.params.id as string).split("_")[0] as unknown as number;
 
-// wathc for content, title, and tags
+// watch for content, title, and tags
 watch(() => state.content, (data) => storage.notes[noteId()].content = data)
 watch(() => state.title, (data) => storage.notes[noteId()].title = data)
 
@@ -90,6 +84,7 @@ watch(() => state.title, (data) => storage.notes[noteId()].title = data)
 watch(() => storage.notes, () => {
     state.title = getValue()?.title
     state.content = getValue()?.content
+    state.updatedAt = getValue()?.updatedAt
 })
 
 

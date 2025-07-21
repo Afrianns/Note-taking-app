@@ -15,13 +15,14 @@
 
                                     <USeparator class="my-2" />
 
-                                    <UButton type="submit">
-                                        Create
-                                    </UButton>
+                                    <UtilsLoadingComp :loadingState="loadingState.initialNote">
+                                        <UButton type="submit" color="neutral">
+                                            Create
+                                        </UButton>
+                                    </UtilsLoadingComp>
                                 </UForm>
                             </template>
                         </UModal>
-
                         <div class="my-5 h-[calc(100vh-150px)] overflow-y-auto">
                             <template v-if="storage.notesExist == noteExistType.EXIST && storage.notes.length > 0"
                                 v-for="(note, idx) in filteringSearch(storage.notes, searching)" :key="idx">
@@ -78,12 +79,12 @@
                 <template v-if="$route.name == 'dashboard-id' || $route.name == 'archived-id'">
                     <USeparator orientation="vertical" class="h-screen" />
                     <div class="mt-18 p-5 space-y-3 w-full max-w-[200px]">
-                        <div v-show="$route.name == 'dashboard-id'">
-                            <UButton icon="material-symbols:archive-outline"
-                                @click="archivedNote($route.params.id as string)" color="neutral" variant="outline"
-                                size="lg" block :ui="{ base: 'w-full' }">
-                                Archived Note</UButton>
-                        </div>
+                        <template v-if="$route.name == 'dashboard-id'">
+                            <utilsArchivableComp name="Archived" />
+                        </template>
+                        <template v-if="$route.name == 'archived-id'">
+                            <utilsArchivableComp name="Unarchived" />
+                        </template>
                         <UModal v-model:open="openConfirmationDelete" title="Delete Note"
                             description="Confirmation Delete Note" :ui="{ footer: 'justify-end' }">
 
@@ -96,8 +97,11 @@
 
                             <template #footer="{ close }">
                                 <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-                                <UButton label="Submit" color="neutral"
-                                    @click="deleteNote($route.params.id as string, $route.name as string)" />
+
+                                <UtilsLoadingComp :loadingState="loadingState.deleteNote">
+                                    <UButton label="Submit" color="neutral"
+                                        @click="deleteNote($route.params.id as string, $route.name as string)" />
+                                </UtilsLoadingComp>
                             </template>
                         </UModal>
                     </div>
@@ -112,23 +116,25 @@ import { type noteType, noteExistType, notesArchivedExistType } from "~/types/ty
 
 import { useSessionStore } from '~/store/storage';
 
-const slotData = defineSlots();
+const slotData = defineSlots()
 
-const storage = useSessionStore();
+const storage = useSessionStore()
 
-type noteKey = keyof noteType;
+type noteKey = keyof noteType
 
 const openCreateInitialNote = ref(false)
 const openConfirmationDelete = ref(false)
+
+const loadingState = reactive({
+    initialNote: false,
+    deleteNote: false,
+})
+
 const state = reactive({
     title: undefined,
     tags: undefined
 })
-let toast: any;
-
-onMounted(() => {
-    toast = useToast();
-})
+let toast = useToast();
 
 const validate = (state: any): FormError[] => {
     const errors = []
@@ -137,8 +143,11 @@ const validate = (state: any): FormError[] => {
 }
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
+    loadingState.initialNote = true
     if (event.data.title) {
         createInitialNote(event.data.title);
+    } else {
+        loadingState.initialNote = false
     }
 }
 
@@ -153,26 +162,6 @@ const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => 
         return result;
     } else {
         return notes;
-    }
-}
-
-const archivedNote = async (id: string) => {
-    const result = await $fetch("/api/note/archivedNote", {
-        method: "POST",
-        body: {
-            noteId: id.split("_")[1],
-            value: true
-        }
-    })
-
-    console.log(result)
-
-    let resultArrFirst = result['0' as keyof typeof result]
-    if (result[1]) {
-        storage.removeNoteById(id)
-        storage.addArchivedNote(resultArrFirst['0' as keyof typeof resultArrFirst] as noteType)
-        navigateTo("/dashboard")
-        toast.add({ title: 'Success', description: 'The note has been archived.', color: 'success' })
     }
 }
 
@@ -211,9 +200,10 @@ const createInitialNote = async (title: string) => {
 
     if (result.length > 0) {
         toast.add({ title: 'Success', description: 'The note has been created.', color: 'success' })
-        openCreateInitialNote.value = false;
+        openCreateInitialNote.value = false
         storage.notes.push(result[0] as unknown as noteType);
     }
+    loadingState.initialNote = false
 }
 
 </script>

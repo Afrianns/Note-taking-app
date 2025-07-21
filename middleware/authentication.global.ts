@@ -1,7 +1,7 @@
 import { useSession } from "~/lib/auth-client";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const session = await useSession();
+  const { data: session } = await useSession(useFetch);
 
   console.log(to.path);
 
