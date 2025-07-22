@@ -2,7 +2,7 @@
     <NuxtLayout name="notes-note">
         <UForm :state="state" class="w-full flex flex-col justify-between" @submit="onSubmit">
             <section>
-                <UInput v-if="state" class="text-4xl font-bold w-full" size="xl"
+                <UInput v-if="state.title != null" class="text-4xl font-bold w-full" size="xl"
                     :ui="{ base: 'p-0 ring-0 focus-visible:ring-0 text-3xl' }" v-model="state.title" />
                 <USkeleton v-else class="h-9 w-full max-w-[20rem]" />
                 <div class="my-5 space-y-3">
@@ -11,20 +11,22 @@
                             <UIcon name="mdi:tag-outline" :size="25" />
                             <p>Tags</p>
                         </div>
-                        <p>Daily, Heroes</p>
+                        <UInputMenu v-model="tags" create-item multiple :items="items" @create="onCreate"
+                            class="w-full border-0 ring-0" :highlight="false"
+                            :ui="{ base: 'ring-0 focus-visible:ring-0 border-0 has-focus-visible:ring-0 p-0' }" />
                     </section>
                     <section class="flex items-center">
                         <div class="flex gap-x-2 items-center mr-20  text-muted">
                             <UIcon name="mingcute:time-line" :size="25" />
                             <p>Last Edited</p>
                         </div>
-                        <p v-if="state">{{ useConvertDate(state.updatedAt) }}</p>
+                        <p v-if="state.updatedAt != null">{{ useConvertDate(state.updatedAt) }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>
                 <USeparator />
-                <UTextarea v-if="state" :rows="12" v-model="state.content" class="w-full py-5" :highlight="false"
-                    :autoresize="true" :ui="{ base: 'ring-0 focus-visible:ring-0' }" />
+                <UTextarea v-if="state.content != null" :rows="12" v-model="state.content" class="w-full py-5"
+                    :highlight="false" :autoresize="true" :ui="{ base: 'ring-0 focus-visible:ring-0' }" />
                 <div v-else class="space-y-2 mt-2">
                     <USkeleton class="h-5 w-full" />
                     <USkeleton class="h-5 w-full" />
@@ -47,14 +49,20 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import { useSessionStore } from '~/store/storage'
 import { noteExistType, type noteType } from "~/types/types"
 
+const tags = ref(['daily', 'dev'])
+const items = ref(['book', 'supe'])
+
 const route = useRoute()
-
 const storage = useSessionStore();
-
 const toast = useToast()
 
+function onCreate(item: string) {
+    items.value.push(item)
+    tags.value.push(item)
+}
+
 const getValueBaseOnId = (uuid: string) => {
-    const id = uuid.split("_")[0];
+    const id = uuid.split("_")[0]
     return storage.notes[id as unknown as number]
 }
 
@@ -89,8 +97,7 @@ watch(() => storage.notes, () => {
 
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
-
-    const result = await $fetch("/api/note/createCompletedNote", {
+    const result = await $fetch("/api/note/updateCompletedNote", {
         method: "POST",
         body: {
             id: storage.notes[noteId()].id,
@@ -99,7 +106,14 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
         }
     })
 
-    toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
+    if (result[0] && !result[1]) {
+        toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
+    }
+
+    if (!result[0] && result[1]) {
+        resetToPrevSaved(route.params.id as string)
+        toast.add({ title: 'Failed', description: result[1] as string, color: 'error' })
+    }
 }
 
 const resetToPrevSaved = async (id: string) => {

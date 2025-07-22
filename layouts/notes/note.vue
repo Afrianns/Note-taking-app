@@ -12,9 +12,7 @@
                                     <UFormField label="Title" name="title" required class="w-full">
                                         <UInput v-model="state.title" placeholder="Enter your title" class="w-full" />
                                     </UFormField>
-
                                     <USeparator class="my-2" />
-
                                     <UtilsLoadingComp :loadingState="loadingState.initialNote">
                                         <UButton type="submit" color="neutral">
                                             Create

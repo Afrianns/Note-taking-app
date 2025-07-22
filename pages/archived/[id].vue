@@ -2,7 +2,7 @@
     <NuxtLayout name="notes-note">
         <div class="w-full flex flex-col justify-between">
             <section>
-                <h1 v-if="state" class="text-4xl font-bold w-full">{{ state.title }}</h1>
+                <h1 v-if="state.title != null" class="text-4xl font-bold w-full">{{ state.title }}</h1>
                 <USkeleton v-else class="h-9 w-full max-w-[20rem]" />
                 <div class="my-5 space-y-3">
                     <section class="flex items-center">
@@ -10,19 +10,22 @@
                             <UIcon name="mdi:tag-outline" :size="25" />
                             <p>Tags</p>
                         </div>
-                        <p>Daily, Heroes</p>
+                        <div class="flex gap-x-2">
+                            <span class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">dev</span>
+                            <span class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">daily</span>
+                        </div>
                     </section>
                     <section class="flex items-center">
                         <div class="flex gap-x-2 items-center mr-20  text-muted">
                             <UIcon name="mingcute:time-line" :size="25" />
                             <p>Last Edited</p>
                         </div>
-                        <p v-if="state">{{ useConvertDate(state.updatedAt) }}</p>
+                        <p v-if="state.updatedAt != null">{{ useConvertDate(state.updatedAt) }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>
                 <USeparator />
-                <p v-if="state" class="w-full py-5">{{ state.content }}</p>
+                <p v-if="state.content != null" class="w-full py-5">{{ state.content }}</p>
                 <div v-else class="space-y-2 mt-2">
                     <USkeleton class="h-5 w-full" />
                     <USkeleton class="h-5 w-full" />
