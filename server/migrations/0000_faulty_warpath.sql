@@ -1,7 +1,7 @@
 CREATE TABLE "notes"."notes" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
-	"content" text,
+	"content" text DEFAULT '' NOT NULL,
 	"user_id" text NOT NULL,
 	"isArchived" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -10,14 +10,14 @@ CREATE TABLE "notes"."notes" (
 --> statement-breakpoint
 CREATE TABLE "notes"."tag_notes" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"tag_id" integer NOT NULL,
-	"note_id" integer NOT NULL,
+	"tag_id" uuid NOT NULL,
+	"note_id" uuid NOT NULL,
 	"sim" text,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "notes"."tags" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"tag" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "tags_tag_unique" UNIQUE("tag")

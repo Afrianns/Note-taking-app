@@ -17,3 +17,10 @@ export enum notesArchivedExistType {
   NOTEXIST,
   EXIST,
 }
+
+
+export type tagType = {
+  id: string;
+  name: string;
+  createdAt: Date;
+};

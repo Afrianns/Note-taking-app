@@ -3,11 +3,11 @@
         <slot />
     </template>
     <template v-else>
-        <UButton color="neutral" loading>
+        <UButton :color="color" loading>
             Loading
         </UButton>
     </template>
 </template>
 <script setup lang="ts">
-defineProps(['loadingState'])
+defineProps(['loadingState', 'color'])
 </script>

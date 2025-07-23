@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   boolean,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 import { user } from "./auth-schema";
@@ -12,26 +13,26 @@ import { user } from "./auth-schema";
 const noteSchema = pgSchema("notes");
 
 export const tags = noteSchema.table("tags", {
-  id: serial("id").primaryKey(),
+  id: uuid().notNull().defaultRandom().primaryKey(),
   name: text("tag").notNull().unique(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const tag_notes = noteSchema.table("tag_notes", {
   id: serial("id").primaryKey(),
-  tagId: integer("tag_id")
+  tagId: uuid("tag_id")
     .notNull()
     .references(() => tags.id, { onDelete: "cascade" }),
-  noteId: integer("note_id")
+  noteId: uuid("note_id")
     .notNull()
     .references(() => notes.id, { onDelete: "cascade" }),
   sim: text("sim"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 export const notes = noteSchema.table("notes", {
-  id: serial("id").primaryKey(),
+  id: uuid().notNull().defaultRandom().primaryKey(),
   title: text("title").notNull(),
-  content: text("content"),
+  content: text("content").notNull().default(""),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

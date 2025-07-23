@@ -1,11 +1,11 @@
 // import { neon } from "@neondatabase/serverless";
 
+import { Placeholder, SQL } from "drizzle-orm";
 import { db } from "~/server/db/db";
 import { notes } from "~/server/schema/notes-schema";
 
 // import { auth } from "../schema/auth-schema";
 // import { count, eq } from "drizzle-orm";
-
 // const { databaseUrl } = useRuntimeConfig();
 
 export default defineEventHandler(async (event) => {

@@ -13,7 +13,7 @@
                                         <UInput v-model="state.title" placeholder="Enter your title" class="w-full" />
                                     </UFormField>
                                     <USeparator class="my-2" />
-                                    <UtilsLoadingComp :loadingState="loadingState.initialNote">
+                                    <UtilsLoadingComp :loadingState="loadingState" color="neutral">
                                         <UButton type="submit" color="neutral">
                                             Create
                                         </UButton>
@@ -96,8 +96,8 @@
                             <template #footer="{ close }">
                                 <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
 
-                                <UtilsLoadingComp :loadingState="loadingState.deleteNote">
-                                    <UButton label="Submit" color="neutral"
+                                <UtilsLoadingComp :loadingState="loadingState" color="neutral">
+                                    <UButton label="Delete" color="neutral"
                                         @click="deleteNote($route.params.id as string, $route.name as string)" />
                                 </UtilsLoadingComp>
                             </template>
@@ -123,10 +123,7 @@ type noteKey = keyof noteType
 const openCreateInitialNote = ref(false)
 const openConfirmationDelete = ref(false)
 
-const loadingState = reactive({
-    initialNote: false,
-    deleteNote: false,
-})
+const loadingState = ref(false)
 
 const state = reactive({
     title: undefined,
@@ -141,11 +138,11 @@ const validate = (state: any): FormError[] => {
 }
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
-    loadingState.initialNote = true
+    loadingState.value = true
     if (event.data.title) {
         createInitialNote(event.data.title);
     } else {
-        loadingState.initialNote = false
+        loadingState.value = false
     }
 }
 
@@ -164,6 +161,7 @@ const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => 
 }
 
 const deleteNote = async (id: string, routeName: string) => {
+    loadingState.value = true
     const result = await $fetch("/api/note/deleteNote", {
         method: "POST",
         body: {
@@ -184,10 +182,11 @@ const deleteNote = async (id: string, routeName: string) => {
         console.log(storage.notes, storage.archivedNotes, id.split("_"))
         toast.add({ title: 'Success', description: 'The note has been deleted.', color: 'success' })
     }
+    loadingState.value = false
 }
 
 const createInitialNote = async (title: string) => {
-
+    loadingState.value = true
     const result = await $fetch("/api/note/createInitialNote", {
         method: "POST",
         body: {
@@ -199,9 +198,9 @@ const createInitialNote = async (title: string) => {
     if (result.length > 0) {
         toast.add({ title: 'Success', description: 'The note has been created.', color: 'success' })
         openCreateInitialNote.value = false
-        storage.notes.push(result[0] as unknown as noteType);
+        storage.addNote(result[0] as unknown as noteType)
     }
-    loadingState.initialNote = false
+    loadingState.value = false
 }
 
 </script>

@@ -36,7 +36,9 @@
             <section>
                 <USeparator />
                 <div class="flex justify-start gap-x-5 items-center mt-5">
-                    <UButton label="Save" type="submit" />
+                    <UtilsLoadingComp :loadingState="loadingState" color="primary">
+                        <UButton label="Save" type="submit" />
+                    </UtilsLoadingComp>
                     <UButton label="Cancel" color="neutral" variant="soft"
                         @click="resetToPrevSaved($route.params.id as string)" />
                 </div>
@@ -47,18 +49,35 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { useSessionStore } from '~/store/storage'
-import { noteExistType, type noteType } from "~/types/types"
+import { noteExistType, type noteType, type tagType } from "~/types/types"
 
 const tags = ref(['daily', 'dev'])
-const items = ref(['book', 'supe'])
+const items = computed(() => storage.tags.map((tag) => tag.name))
 
 const route = useRoute()
-const storage = useSessionStore();
 const toast = useToast()
+const storage = useSessionStore()
 
-function onCreate(item: string) {
-    items.value.push(item)
-    tags.value.push(item)
+const loadingState = ref(false)
+
+
+const onCreate = async (item: string) => {
+    const result = await $fetch("/api/tag/createTag", {
+        method: "POST",
+        body: {
+            nameTag: item
+        }
+    })
+
+    if (result[0] && !result[1]) {
+        items.value.push(item)
+        tags.value.push(item)
+        storage.tags.push(result[0][0] as unknown as tagType);
+        toast.add({ title: 'Success', description: 'Tag successfuly added.', color: 'success' })
+    }
+    if (!result[0] && result[1]) {
+        toast.add({ title: 'Failed', description: result[1] as string, color: 'error' })
+    }
 }
 
 const getValueBaseOnId = (uuid: string) => {
@@ -97,6 +116,7 @@ watch(() => storage.notes, () => {
 
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
+    loadingState.value = true
     const result = await $fetch("/api/note/updateCompletedNote", {
         method: "POST",
         body: {
@@ -107,13 +127,14 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     })
 
     if (result[0] && !result[1]) {
-        toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' })
+        toast.add({ title: 'Success', description: 'Successfuly updated.', color: 'success' })
     }
 
     if (!result[0] && result[1]) {
         resetToPrevSaved(route.params.id as string)
         toast.add({ title: 'Failed', description: result[1] as string, color: 'error' })
     }
+    loadingState.value = false
 }
 
 const resetToPrevSaved = async (id: string) => {

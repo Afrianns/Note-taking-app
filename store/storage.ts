@@ -1,6 +1,7 @@
 import { getSession } from "~/lib/auth-client";
 import {
   type noteType,
+  type tagType,
   noteExistType,
   notesArchivedExistType,
 } from "~/types/types";
@@ -22,13 +23,15 @@ export const useSessionStore = defineStore("sessionStore", {
     } as useSessionStoreType,
     notes: [] as noteType[],
     archivedNotes: [] as noteType[],
+    tags: [] as tagType[],
     notesExist: noteExistType.DEFAULT,
     notesArchivedExist: notesArchivedExistType.DEFAULT,
   }),
   actions: {
     async getUserCredential() {
       const { data } = await getSession();
-      console.log("hello", data);
+      this.getAllTags();
+
       if (data) {
         this.credential = data.user;
         this.getCurrentNoteUser(data.user.id);
@@ -48,6 +51,12 @@ export const useSessionStore = defineStore("sessionStore", {
         this.notesExist = noteExistType.NOTEXIST;
       }
       this.notes = result as unknown as noteType[];
+    },
+
+    async getAllTags() {
+      const result = await $fetch("/api/tag/getAllTags");
+      console.log(result);
+      this.tags = result as unknown as tagType[];
     },
 
     async getArchivedNoteUser(userId: string) {

@@ -18,6 +18,23 @@
                 <USeparator class="w-full bg-red-300" />
 
                 <h3 class="my-2 text-gray-500">Tags</h3>
+
+                <div v-if="storage.tags.length > 0" v-for="tag in storage.tags" class="space-y-3 mt-5">
+                    <div class="flex items-center gap-x-2 hover:bg-gray-200 py-1 px-2 cursor-pointer">
+                        <UIcon name="lucide:tag" />
+                        <p>{{ tag.name }}</p>
+                    </div>
+                </div>
+                <div v-else class="space-y-3 mt-5">
+                    <div class="flex items-center gap-x-2">
+                        <USkeleton class="h-5 w-1/5" />
+                        <USkeleton class="h-5 w-4/5" />
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                        <USkeleton class="h-5 w-1/5" />
+                        <USkeleton class="h-5 w-4/5" />
+                    </div>
+                </div>
             </div>
             <USeparator orientation="vertical" class="h-svh" />
         </div>
@@ -62,6 +79,7 @@ const searchQuery = ref('');
 const input = useTemplateRef('input')
 
 const toast = useToast()
+
 
 defineShortcuts({
     '/': () => {
