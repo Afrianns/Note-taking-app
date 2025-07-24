@@ -19,8 +19,8 @@
 
                 <h3 class="my-2 text-gray-500">Tags</h3>
 
-                <div v-if="storage.tags.length > 0" v-for="tag in storage.tags" class="space-y-3 mt-5">
-                    <div class="flex items-center gap-x-2 hover:bg-gray-200 py-1 px-2 cursor-pointer">
+                <div v-if="storage.tags.length > 0" v-for="tag in storage.tags" class="space-y-5">
+                    <div class="flex items-center gap-x-3 hover:bg-gray-200 py-1 px-2 cursor-pointer mt-1">
                         <UIcon name="lucide:tag" />
                         <p>{{ tag.name }}</p>
                     </div>
@@ -79,7 +79,6 @@ const searchQuery = ref('');
 const input = useTemplateRef('input')
 
 const toast = useToast()
-
 
 defineShortcuts({
     '/': () => {

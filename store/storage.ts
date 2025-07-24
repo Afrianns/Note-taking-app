@@ -33,6 +33,7 @@ export const useSessionStore = defineStore("sessionStore", {
       this.getAllTags();
 
       if (data) {
+        console.log(data);
         this.credential = data.user;
         this.getCurrentNoteUser(data.user.id);
         this.getArchivedNoteUser(data.user.id);
@@ -45,6 +46,8 @@ export const useSessionStore = defineStore("sessionStore", {
           userId: userId,
         },
       });
+
+      console.log("store", result);
       if (result.length > 0) {
         this.notesExist = noteExistType.EXIST;
       } else {

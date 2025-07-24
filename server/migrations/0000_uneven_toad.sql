@@ -12,7 +12,7 @@ CREATE TABLE "notes"."tag_notes" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"tag_id" uuid NOT NULL,
 	"note_id" uuid NOT NULL,
-	"sim" text,
+	"name" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

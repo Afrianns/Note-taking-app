@@ -26,7 +26,7 @@ export const tag_notes = noteSchema.table("tag_notes", {
   noteId: uuid("note_id")
     .notNull()
     .references(() => notes.id, { onDelete: "cascade" }),
-  sim: text("sim"),
+  name: text("name").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 export const notes = noteSchema.table("notes", {

@@ -1,5 +1,5 @@
 {
-  "id": "ba07b19d-d398-4413-8474-9cbd31d96cdc",
+  "id": "12e67e3a-97fa-4834-8657-52bb8398cf43",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -99,11 +99,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "sim": {
-          "name": "sim",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",

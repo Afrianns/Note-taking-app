@@ -11,7 +11,7 @@
                             <UIcon name="mdi:tag-outline" :size="25" />
                             <p>Tags</p>
                         </div>
-                        <UInputMenu v-model="tags" create-item multiple :items="items" @create="onCreate"
+                        <UInputMenu v-model="tags.name" create-item multiple :items="items" @create="onCreate"
                             class="w-full border-0 ring-0" :highlight="false"
                             :ui="{ base: 'ring-0 focus-visible:ring-0 border-0 has-focus-visible:ring-0 p-0' }" />
                     </section>
@@ -49,9 +49,12 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { useSessionStore } from '~/store/storage'
-import { noteExistType, type noteType, type tagType } from "~/types/types"
+import { noteExistType, type noteType, type tagType, type noteTagType } from "~/types/types"
 
-const tags = ref(['daily', 'dev'])
+const tags = reactive({
+    name: ['daily', 'dev'],
+    id: []
+})
 const items = computed(() => storage.tags.map((tag) => tag.name))
 
 const route = useRoute()
@@ -59,7 +62,6 @@ const toast = useToast()
 const storage = useSessionStore()
 
 const loadingState = ref(false)
-
 
 const onCreate = async (item: string) => {
     const result = await $fetch("/api/tag/createTag", {
@@ -71,7 +73,8 @@ const onCreate = async (item: string) => {
 
     if (result[0] && !result[1]) {
         items.value.push(item)
-        tags.value.push(item)
+        tags.name.push(item)
+        upsertNoteTag(result[0][0] as unknown as tagType)
         storage.tags.push(result[0][0] as unknown as tagType);
         toast.add({ title: 'Success', description: 'Tag successfuly added.', color: 'success' })
     }
@@ -79,6 +82,7 @@ const onCreate = async (item: string) => {
         toast.add({ title: 'Failed', description: result[1] as string, color: 'error' })
     }
 }
+
 
 const getValueBaseOnId = (uuid: string) => {
     const id = uuid.split("_")[0]
@@ -105,7 +109,6 @@ const noteId = () => (route.params.id as string).split("_")[0] as unknown as num
 // watch for content, title, and tags
 watch(() => state.content, (data) => storage.notes[noteId()].content = data)
 watch(() => state.title, (data) => storage.notes[noteId()].title = data)
-
 
 // load first time since data async
 watch(() => storage.notes, () => {
@@ -137,6 +140,25 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     loadingState.value = false
 }
 
+const upsertNoteTag = async (tag: tagType) => {
+    const result = await $fetch("/api/tag/upsertNoteTag", {
+        method: "POST",
+        body: {
+            tagId: tag.id,
+            noteId: getValue().id,
+            name: tag.name,
+        }
+    })
+
+    if (result[0]) {
+        storage.notes[noteId()].tags.push({
+            id: result[0].tagId,
+            name: result[0].name
+        })
+        console.log(result[0])
+    }
+
+}
 const resetToPrevSaved = async (id: string) => {
 
     const result = await $fetch("/api/note/getSingleNote", {

@@ -2,8 +2,14 @@ export type noteType = {
   id: number;
   title: string;
   content: string | null;
+  tags: noteTagType[];
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type noteTagType = {
+  id: string;
+  name: string;
 };
 
 export enum noteExistType {
@@ -17,7 +23,6 @@ export enum notesArchivedExistType {
   NOTEXIST,
   EXIST,
 }
-
 
 export type tagType = {
   id: string;
