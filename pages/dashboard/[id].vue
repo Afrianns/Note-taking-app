@@ -237,10 +237,13 @@ const resetToPrevSaved = async (id: string) => {
     })
 
     console.log(result)
-    // if (result) {
-    //     storage.notes[noteId()] = result[0] as unknown as noteType
-    //     state.title = result[0].title
-    //     state.content = result[0].content
-    // }
+    if (result) {
+        storage.notes[noteId()] = result as unknown as noteType
+        state.title = result.title
+        state.content = result.content
+
+        currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
+
+    }
 }
 </script>

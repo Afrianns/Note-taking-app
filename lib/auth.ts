@@ -1,13 +1,13 @@
-import { Resend } from "resend";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { Resend } from "resend";
 
-import { config } from "dotenv";
+// import { config } from "dotenv";
 import { db } from "../server/db/db";
 
 import * as schema from "../server/schema/auth-schema";
 
-config({ path: ".env" });
+// config({ path: ".env" });
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
@@ -16,7 +16,7 @@ export const auth = betterAuth({
   },
   user: {
     changeEmail: {
-      enabled: true,
+      enabled: true, 
       sendChangeEmailVerification: async (
         { user, newEmail, url, token },
         request
@@ -40,7 +40,6 @@ export const auth = betterAuth({
             </div>
             `,
         });
-        console.log(res);
       },
     },
   },
@@ -65,8 +64,6 @@ export const auth = betterAuth({
         </div>
         `,
       });
-
-      console.log(res);
     },
   },
   database: drizzleAdapter(db, {
