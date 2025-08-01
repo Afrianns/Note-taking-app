@@ -12,6 +12,8 @@ export type noteTagType = {
   name: string;
 };
 
+export type createdTagType = [tagType[], string];
+
 export enum noteExistType {
   DEFAULT,
   NOTEXIST,

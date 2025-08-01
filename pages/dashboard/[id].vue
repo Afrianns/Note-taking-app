@@ -44,7 +44,8 @@
                     <UtilsLoadingComp :loadingState="loadingState" color="primary">
                         <UButton label="Save" type="submit" />
                     </UtilsLoadingComp>
-                    <UButton label="Cancel" color="neutral" variant="soft" @click="resetToPrevSaved(routeId)" />
+                    <UButton label="Cancel" color="neutral" variant="soft"
+                        @click="resetToPrevSaved($route.params.id as string)" />
                 </div>
             </section>
         </UForm>
@@ -53,13 +54,11 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { toast as vueToast } from 'vue-sonner'
+import { createTag, getSingleNote, upsertTag } from '~/lib/fetch'
 import { useSessionStore } from '~/store/storage'
 import { noteExistType, type inputTagType, type noteType, type tagType } from "~/types/types"
 
-const routeId = computed(() => String(route.params.id))
-
 const route = useRoute()
-const toast = useToast()
 const storage = useSessionStore()
 
 const loadingState = ref(false)
@@ -67,23 +66,19 @@ const currentNoteTags = ref<inputTagType[]>([]);
 
 const items = computed(() => storage.tags.map((tag: tagType) => ({ value: tag.id, label: tag.name })))
 
-type createdTagType = [tagType[], string]
+const getValue = () => {
+    const id = (route.params.id as string).split("_")[0]
+    return storage.notes[id as unknown as number]
+}
 
 const onCreate = async (item: string) => {
 
-    const result: createdTagType = await $fetch("/api/tag/createTag", {
-        method: "POST",
-        body: {
-            nameTag: item
-        }
-    })
+    const result = await createTag(item)
 
     if (result[0] && !result[1]) {
-        // items.value.push(item)
         storage.tags.push(result[0][0])
         currentNoteTags.value = [...currentNoteTags.value, { value: result[0][0].id, label: result[0][0].name }]
-        // upsertNoteTag(result[0][0] as unknown as tagType)
-        //     storage.tags.push(result[0][0] as unknown as tagType);
+
         vueToast.success("Success to create tag", {
             description: "Tag successfuly added.",
         });
@@ -95,14 +90,6 @@ const onCreate = async (item: string) => {
     }
 }
 
-const getValueBaseOnId = (uuid: string) => {
-    const id = uuid.split("_")[0]
-    return storage.notes[id as unknown as number]
-}
-
-const getValue = () => getValueBaseOnId(route.params.id as string)
-const noteId = () => (route.params.id as string).split("_")[0] as unknown as number;
-
 currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
 
 const state = reactive({
@@ -112,9 +99,7 @@ const state = reactive({
 })
 
 watch(() => storage.notesExist, () => {
-    if (storage.notesExist == noteExistType.NOTEXIST) {
-        navigateTo('/dashboard');
-    }
+    if (storage.notesExist == noteExistType.NOTEXIST) navigateTo('/dashboard');
 })
 
 watch(() => currentNoteTags.value, (newData: inputTagType[], oldData: inputTagType[]) => {
@@ -127,56 +112,31 @@ watch(() => currentNoteTags.value, (newData: inputTagType[], oldData: inputTagTy
     let deletedValue = checkDeletedOrAdded(oldData, newData);// check if deleted
     let addedValue = checkDeletedOrAdded(newData, oldData); // check if added
 
-    console.log(deletedValue, addedValue)
-
-    //     console.log(deletedValue, addedValue)
-
     if (addedValue) {
-        storage.notes[noteId()].tags.push({
+        getValue().tags.push({
             id: addedValue.value,
             name: addedValue.label
         })
     }
     if (deletedValue) {
-        storage.notes[noteId()].tags = storage.notes[noteId()].tags.filter((tag) => tag.name != deletedValue.label);
+        getValue().tags = getValue().tags.filter((tag) => tag.name != deletedValue.label);
     }
 })
 
-
 // watch for content, title, and tags
-watch(() => state.content, (data: string | null) => storage.notes[noteId()].content = data)
-watch(() => state.title, (data: string | null) => storage.notes[noteId()].title = data)
+watch(() => state.content, (data: string | null) => getValue().content = data)
+watch(() => state.title, (data: string | null) => getValue().title = data)
 
 // load first time since data async
-watch(() => storage.notes, () => {
-    getNote()
-    // getNoteTags()
-})
+watch(() => storage.notes, () => getNote())
 
 const getNote = () => {
-
-    currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
-
     state.title = getValue()?.title
     state.content = getValue()?.content
     state.updatedAt = getValue()?.updatedAt
 
+    currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
 }
-
-// const getNoteTags = () => {
-//     getValue()?.tags.forEach((tag: { id: string, name: string }) => {
-//         tags.name.push(tag.name as string)
-//         tags.id.push(tag.id as string)
-//     })
-// }
-
-interface NoteType {
-    id: string;
-    title: string;
-    content: string;
-}
-
-type completeNoteType = [NoteType[], string]
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
     loadingState.value = true
@@ -190,7 +150,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     // const result: completeNoteType = await $fetch("/api/note/updateCompletedNote", {
     //     method: "POST",
     //     body: {
-    //         id: storage.notes[noteId()].id,
+    //         id: getValue().id,
     //         title: event.data.title,
     //         content: event.data.content
     //     }
@@ -203,22 +163,16 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     // if (!result[0] && result[1]) {
     //     resetToPrevSaved(route.params.id as string)
     //     toast.add({ title: 'Failed', description: result[1] as string, color: 'error' })
-    // }
+    // }        // upsertNoteTag(result[0][0] as unknown as tagType)
+    //     storage.tags.push(result[0][0] as unknown as tagType);
     loadingState.value = false
 }
 
 const upsertNoteTag = async (tag: tagType) => {
-    const result: noteType = await $fetch("/api/tag/upsertNoteTag", {
-        method: "POST",
-        body: {
-            tagId: tag.id,
-            noteId: getValue().id,
-            name: tag.name,
-        }
-    })
 
+    const result = await upsertTag(tag, getValue().id)
     // if (result) {
-    //     storage.notes[noteId()].tags.push({
+    //     getValue().tags.push({
     //         id: result[0].tagId,
     //         name: result[0].name
     //     })
@@ -228,22 +182,11 @@ const upsertNoteTag = async (tag: tagType) => {
 }
 
 const resetToPrevSaved = async (id: string) => {
+    const result = await getSingleNote(id);
 
-    const result: noteType = await $fetch("/api/note/getSingleNote", {
-        method: "POST",
-        body: {
-            noteId: id.split("_")[1],
-        }
-    })
-
-    console.log(result)
     if (result) {
-        storage.notes[noteId()] = result as unknown as noteType
-        state.title = result.title
-        state.content = result.content
-
-        currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
-
+        storage.notes[(route.params.id as string).split("_")[0] as unknown as number] = result as unknown as noteType
+        getNote()
     }
 }
 </script>
