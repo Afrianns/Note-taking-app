@@ -55,7 +55,7 @@ const state = reactive({
     updatedAt: getValue()?.updatedAt
 })
 
-watch(() => storage.notesArchivedExist, (data) => {
+watch(() => storage.notesArchivedExist, () => {
 
     if (storage.notesArchivedExist == notesArchivedExistType.NOTEXIST) {
         navigateTo("/archived")

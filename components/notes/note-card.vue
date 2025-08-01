@@ -3,8 +3,15 @@
     <nuxt-link :to="'/' + page + '/' + idx + '_' + note.id" class="p-3 rounded-md  space-y-2 cursor-pointer block"
         :class="{ 'bg-main-300 dark:bg-main-950': `${idx}_${note.id}` == $route.params.id }">
         <h2 class="font-bold text-xl">{{ note.title }}</h2>
-        <div class="flex gap-x-2" v-for="tag in note.tags">
-            <span class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">{{ tag.name }}</span>
+        <div class="flex gap-x-2 items-center">
+
+            <template v-for="(tag, idx) in note.tags">
+                <span v-if="idx <= 2" class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">{{
+                    tag.name }}</span>
+            </template>
+            <span v-if="note.tags.length > 3" class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">
+                {{ note.tags.length - 3 }}+
+            </span>
         </div>
         <span class="text-muted text-xs font-medium">{{
             useConvertDate(note.createdAt)

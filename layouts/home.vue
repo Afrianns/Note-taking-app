@@ -1,4 +1,5 @@
 <template>
+    <Toaster richColors />
     <div v-show="false"
         class="bg-green-400 w-full py-3 text-gray-200 font-medium flex items-center justify-center gap-x-2 fixed top-0 left-0 right-0 z-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 56 56">
@@ -65,6 +66,9 @@
     </div>
 </template>
 <script setup lang="ts">
+import { Toaster } from 'vue-sonner'
+import 'vue-sonner/style.css'
+
 import { sendVerificationEmail } from '~/lib/auth-client'
 import { useSessionStore } from '~/store/storage';
 

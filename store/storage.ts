@@ -1,4 +1,5 @@
 import { getSession } from "~/lib/auth-client";
+
 import {
   type noteType,
   type tagType,
@@ -18,6 +19,7 @@ type useSessionStoreType = {
 
 export const useSessionStore = defineStore("sessionStore", {
   state: () => ({
+    firstTimeload: true,
     credential: {
       emailVerified: true,
     } as useSessionStoreType,
@@ -39,6 +41,7 @@ export const useSessionStore = defineStore("sessionStore", {
         this.getArchivedNoteUser(data.user.id);
       }
     },
+
     async getCurrentNoteUser(userId: string) {
       const result = await $fetch("/api/note/getNote", {
         method: "POST",

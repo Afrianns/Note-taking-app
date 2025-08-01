@@ -1,6 +1,6 @@
 export type noteType = {
   id: number;
-  title: string;
+  title: string | null;
   content: string | null;
   tags: noteTagType[];
   createdAt: Date;
@@ -29,3 +29,5 @@ export type tagType = {
   name: string;
   createdAt: Date;
 };
+
+export type inputTagType = { value: string; label: string };
