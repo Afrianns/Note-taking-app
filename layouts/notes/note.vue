@@ -22,9 +22,10 @@
                             </template>
                         </UModal>
                         <div class="my-5 h-[calc(100vh-150px)] overflow-y-auto">
-                            <template v-if="storage.notesExist == noteExistType.EXIST && storage.notes.length > 0"
-                                v-for="(note, idx) in filteringSearch(storage.notes, searching)" :key="idx">
-                                <notesNoteCard page="dashboard" :idx="idx" :note="note" />
+                            <template v-if="storage.notesExist == noteExistType.EXIST && storage.notes.length > 0">
+                                <notesNoteCard page="dashboard"
+                                    v-for="(note, idx) in filteringSearch(storage.notes, searching)" :key="note.id"
+                                    :idx="idx" :note="note" />
                             </template>
 
                             <template v-else-if="storage.notesExist == noteExistType.NOTEXIST">
@@ -47,9 +48,10 @@
                     <div v-if="$route.name == 'archived' || $route.name == 'archived-id'">
                         <div class="mb-5 h-full overflow-y-auto">
                             <template
-                                v-if="storage.notesArchivedExist == notesArchivedExistType.EXIST && storage.archivedNotes.length > 0"
-                                v-for="(note, idx) in filteringSearch(storage.archivedNotes, searching)" :key="idx">
-                                <notesNoteCard page="archived" :idx="idx" :note="note" />
+                                v-if="storage.notesArchivedExist == notesArchivedExistType.EXIST && storage.archivedNotes.length > 0">
+                                <notesNoteCard page="archived"
+                                    v-for="(note, idx) in filteringSearch(storage.archivedNotes, searching)"
+                                    :key="note.id" :idx="idx" :note="note" />
                             </template>
 
                             <template v-else-if="storage.notesArchivedExist == notesArchivedExistType.NOTEXIST">
@@ -147,17 +149,27 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     }
 }
 
-const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => {
-    if (searchQuery.search.trim() != '') {
+const filterByTag = (notes: noteType[]) => {
 
-        let result = notes.filter((row) => {
+    const query = useRoute().query
+    if (Object.keys(query).length >= 1) {
+        return notes.filter((row) => row.tags.some((tag) => tag.name == query.q))
+    } else {
+        return notes;
+    }
+}
+
+const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => {
+
+    if (searchQuery.search.trim() != '') {
+        let result = filterByTag(notes).filter((row) => {
             return Object.keys(row).some((idx) => {
                 return String(row[idx as noteKey]).toLowerCase().indexOf(searchQuery.search.toLowerCase()) > -1
             })
         })
         return result;
     } else {
-        return notes;
+        return filterByTag(notes);
     }
 }
 
