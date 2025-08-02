@@ -1,5 +1,4 @@
 <template>
-    <Toaster richColors />
     <div v-show="false"
         class="bg-green-400 w-full py-3 text-gray-200 font-medium flex items-center justify-center gap-x-2 fixed top-0 left-0 right-0 z-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 56 56">
@@ -16,15 +15,19 @@
                     Inc
                 </h1>
                 <NoteMenu />
-                <USeparator class="w-full bg-red-300" />
+                <USeparator class="w-full" />
 
                 <h3 class="my-2 text-gray-500">Tags</h3>
 
                 <div v-if="storage.tags.length > 0" v-for="tag in storage.tags" class="space-y-5">
-                    <div class="flex items-center gap-x-3 hover:bg-gray-200 py-1 px-2 cursor-pointer mt-1">
+                    <div
+                        class="flex items-center gap-x-3 hover:bg-gray-200 dark:hover:bg-main-950 py-1 px-2 cursor-pointer mt-1">
                         <UIcon name="lucide:tag" />
                         <p>{{ tag.name }}</p>
                     </div>
+                </div>
+                <div v-else-if="storage.tags.length <= 0 && storage.loadedAll >= 3">
+                    <p class="text-center text-muted">No Tags</p>
                 </div>
                 <div v-else class="space-y-3 mt-5">
                     <div class="flex items-center gap-x-2">
@@ -66,8 +69,6 @@
     </div>
 </template>
 <script setup lang="ts">
-import { Toaster } from 'vue-sonner'
-import 'vue-sonner/style.css'
 
 import { sendVerificationEmail } from '~/lib/auth-client'
 import { useSessionStore } from '~/store/storage';

@@ -10,9 +10,18 @@
                             <UIcon name="mdi:tag-outline" :size="25" />
                             <p>Tags</p>
                         </div>
-                        <div class="flex gap-x-2">
-                            <span class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">dev</span>
-                            <span class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">daily</span>
+                        <div v-if="state.tags && state.tags.length > 0" v-for="tag in state.tags" class="space-y-5">
+                            <div class="flex gap-x-2">
+                                <span class="py-[1px] text-xs px-2 bg-main-200 dark:bg-main-500 rounded-sm">{{ tag.name
+                                }}</span>
+                            </div>
+                        </div>
+                        <div v-else-if="state.tags && state.tags.length <= 0 && storage.loadedAll >= 3">
+                            <p class="text-center text-muted">No Tags</p>
+                        </div>
+                        <div v-else class="flex gap-x-2 items-center">
+                            <USkeleton class="h-5 w-14" />
+                            <USkeleton class="h-5 w-14" />
                         </div>
                     </section>
                     <section class="flex items-center">
@@ -52,7 +61,8 @@ const getValue = () => getValueBaseOnId(route.params.id as string)
 const state = reactive({
     title: getValue()?.title,
     content: getValue()?.content,
-    updatedAt: getValue()?.updatedAt
+    updatedAt: getValue()?.updatedAt,
+    tags: getValue()?.tags
 })
 
 watch(() => storage.notesArchivedExist, () => {
@@ -70,6 +80,8 @@ watch(() => storage.archivedNotes, () => {
     state.title = getValue()?.title
     state.content = getValue()?.content
     state.updatedAt = getValue()?.updatedAt
+    state.tags = getValue()?.tags
+    console.log(getValue())
 })
 
 </script>

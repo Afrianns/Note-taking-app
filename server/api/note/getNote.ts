@@ -5,7 +5,11 @@ import { notes, tag_notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-  console.log(data);
+
+  let isArchived = false;
+
+  if (data.type && data.type == "archived") isArchived = true;
+
   const result = await db
     .select({
       id: notes.id,
@@ -19,7 +23,7 @@ export default defineEventHandler(async (event) => {
     })
     .from(notes)
     .leftJoin(tag_notes, eq(notes.id, tag_notes.noteId))
-    .where(eq(notes.isArchived, false))
+    .where(eq(notes.isArchived, isArchived))
     .execute();
 
   const notesMap = new Map();

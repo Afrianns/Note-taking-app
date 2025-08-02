@@ -19,16 +19,16 @@
     </UModal>
 </template>
 <script setup lang="ts">
+import { toast as vueToast } from 'vue-sonner'
+import { archivingNote } from '~/lib/fetch'
 import { useSessionStore } from '~/store/storage'
-import type { noteType } from '~/types/types'
 
-defineProps(['name'])
 const openConfirmationArchived = ref(false)
+const loadingArchivableState = ref(false)
 
 const storage = useSessionStore()
-const toast = useToast()
 
-const loadingArchivableState = ref(false)
+defineProps(['name'])
 
 
 const checkTypeArchivable = (id: string, name: string) => {
@@ -41,38 +41,34 @@ const checkTypeArchivable = (id: string, name: string) => {
 
 const archivedNote = async (id: string) => {
     loadingArchivableState.value = true
-    const result = await $fetch("/api/note/archivedNote", {
-        method: "POST",
-        body: {
-            noteId: id.split("_")[1],
-            value: true
-        }
-    })
 
-    let resultArrFirst = result['0' as keyof typeof result]
-    if (result[1]) {
+    const result = await archivingNote(id.split("_")[1], true);
+
+    if (result) {
+        openConfirmationArchived.value = false
+        storage.addArchivedNote(storage.notes[id.split("_")[0] as unknown as number])
         storage.removeNoteById(id)
-        storage.addArchivedNote(resultArrFirst['0' as keyof typeof resultArrFirst] as noteType)
-        toast.add({ title: 'Success', description: 'The note has been archived.', color: 'success' })
+        vueToast.success("Success to archived", {
+            description: 'The note has been archived.',
+        });
         navigateTo("/dashboard")
     }
+
     loadingArchivableState.value = false
 }
 
 const restoreArchivedNote = async (id: string) => {
     loadingArchivableState.value = true
-    const result = await $fetch("/api/note/archivedNote", {
-        method: "POST",
-        body: {
-            noteId: id.split("_")[1],
-        }
-    })
-    let resultArrFirst = result['0' as keyof typeof result]
 
-    if (!result[1]) {
+    const result = await archivingNote(id.split("_")[1], false);
+
+    if (result) {
+        openConfirmationArchived.value = false
+        storage.addNote(storage.archivedNotes[id.split("_")[0] as unknown as number])
         storage.removeArchivedNoteById(id)
-        storage.addNote(resultArrFirst['0' as keyof typeof resultArrFirst] as noteType)
-        toast.add({ title: 'Success', description: 'The note has been unarchived.', color: 'success' })
+        vueToast.success("Successfully to restored", {
+            description: 'The note has been restored.',
+        });
         navigateTo("/archived")
     }
     loadingArchivableState.value = false

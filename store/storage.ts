@@ -19,6 +19,7 @@ type useSessionStoreType = {
 
 export const useSessionStore = defineStore("sessionStore", {
   state: () => ({
+    loadedAll: 0,
     firstTimeload: true,
     credential: {
       emailVerified: true,
@@ -57,18 +58,21 @@ export const useSessionStore = defineStore("sessionStore", {
         this.notesExist = noteExistType.NOTEXIST;
       }
       this.notes = result as unknown as noteType[];
+      this.loadedAll++;
     },
 
     async getAllTags() {
       const result = await $fetch("/api/tag/getAllTags");
       console.log(result);
       this.tags = result as unknown as tagType[];
+      this.loadedAll++;
     },
 
     async getArchivedNoteUser(userId: string) {
-      const result = await $fetch("/api/note/getArchivedNote", {
+      const result = await $fetch("/api/note/getNote", {
         method: "POST",
         body: {
+          type: "archived",
           userId: userId,
         },
       });
@@ -78,6 +82,7 @@ export const useSessionStore = defineStore("sessionStore", {
         this.notesArchivedExist = notesArchivedExistType.NOTEXIST;
       }
       this.archivedNotes = result as unknown as noteType[];
+      this.loadedAll++;
     },
 
     removeNoteById(id: string) {

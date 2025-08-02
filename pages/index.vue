@@ -1,5 +1,5 @@
 <template>
-    <NuxtLayout name="auth">
+    <UContainer>
         <UTabs :items="items" class="md:w-1/2 mx-auto my-10">
             <template #login="{ item }">
                 <UCard class="w-full dark:bg-neutral-950 bg-white">
@@ -100,7 +100,8 @@
                 {{ data }}
             </template>
         </UTabs>
-    </NuxtLayout>
+
+    </UContainer>
 </template>
 
 <script setup lang="ts">

@@ -98,7 +98,7 @@
 
                                 <UtilsLoadingComp :loadingState="loadingState" color="neutral">
                                     <UButton label="Delete" color="neutral"
-                                        @click="deleteNote($route.params.id as string, $route.name as string)" />
+                                        @click="doDeleteNote($route.params.id as string, $route.name as string)" />
                                 </UtilsLoadingComp>
                             </template>
                         </UModal>
@@ -109,10 +109,11 @@
     </UApp>
 </template>
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from '@nuxt/ui'
-import { type noteType, noteExistType, notesArchivedExistType } from "~/types/types"
-
+import type { FormError, FormSubmitEvent } from '@nuxt/ui';
+import { toast as vueToast } from 'vue-sonner';
+import { deleteNote, insertInitialNote } from '~/lib/fetch';
 import { useSessionStore } from '~/store/storage';
+import { type noteType, noteExistType, notesArchivedExistType } from "~/types/types";
 
 const slotData = defineSlots()
 
@@ -129,7 +130,7 @@ const state = reactive({
     title: undefined,
     tags: undefined
 })
-let toast = useToast();
+
 
 const validate = (state: any): FormError[] => {
     const errors = []
@@ -160,18 +161,11 @@ const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => 
     }
 }
 
-const deleteNote = async (id: string, routeName: string) => {
+const doDeleteNote = async (id: string, routeName: string) => {
     loadingState.value = true
-    const result = await $fetch("/api/note/deleteNote", {
-        method: "POST",
-        body: {
-            noteId: id.split("_")[1],
-        }
-    })
+    const result = await deleteNote(id.split("_")[1])
 
-    openConfirmationDelete.value = false;
     if (result) {
-
         if (routeName == 'dashboard-id') {
             storage.removeNoteById(id)
         } else {
@@ -180,27 +174,26 @@ const deleteNote = async (id: string, routeName: string) => {
 
         navigateTo(`/${routeName.split('-')[0]}`)
         console.log(storage.notes, storage.archivedNotes, id.split("_"))
-        toast.add({ title: 'Success', description: 'The note has been deleted.', color: 'success' })
+        vueToast.success("Successfully deleted", {
+            description: 'The note has been deleted.',
+        });
     }
     loadingState.value = false
+    openConfirmationDelete.value = false;
 }
 
 const createInitialNote = async (title: string) => {
     loadingState.value = true
-    const result = await $fetch("/api/note/createInitialNote", {
-        method: "POST",
-        body: {
-            userId: storage.credential.id,
-            title: title,
-        }
-    })
-
-    if (result.length > 0) {
-        toast.add({ title: 'Success', description: 'The note has been created.', color: 'success' })
-        openCreateInitialNote.value = false
-        storage.addNote(result[0] as unknown as noteType)
+    const result = await insertInitialNote(title, storage.credential.id)
+    if (result) {
+        vueToast.success("Successfully created", {
+            description: 'The note has been created.',
+        });
+        storage.addNote(result)
     }
+
     loadingState.value = false
+    openCreateInitialNote.value = false
 }
 
 </script>

@@ -1,21 +1,25 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import { notes } from "../../schema/notes-schema";
+import { notes, tag_notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
 
-  let isArchiving = false;
+  if (!data.hasOwnProperty("setArchiving")) return;
 
-  if (data.value) {
-    isArchiving = true;
+  try {
+    if (data.noteId != "") {
+      await db
+        .update(notes)
+        .set({ isArchived: data.setArchiving })
+        .where(eq(notes.id, data.noteId))
+        .execute();
+
+      return true;
+    } else {
+      return false;
+    }
+  } catch (err: any) {
+    throw createError({ statusCode: 500, statusMessage: err.message });
   }
-  const result = await db
-    .update(notes)
-    .set({ isArchived: isArchiving })
-    .where(eq(notes.id, data.noteId))
-    .returning()
-    .execute();
-
-  return [result, isArchiving];
 });

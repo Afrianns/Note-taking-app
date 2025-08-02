@@ -1,5 +1,5 @@
 {
-  "id": "12e67e3a-97fa-4834-8657-52bb8398cf43",
+  "id": "1cdfc0eb-b5b9-409a-b177-5ed1588fa5f8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -145,7 +145,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "tag_notes_tag_id_note_id_unique": {
+          "name": "tag_notes_tag_id_note_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tag_id",
+            "note_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

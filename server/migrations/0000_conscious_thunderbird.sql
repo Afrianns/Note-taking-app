@@ -13,7 +13,8 @@ CREATE TABLE "notes"."tag_notes" (
 	"tag_id" uuid NOT NULL,
 	"note_id" uuid NOT NULL,
 	"name" text NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "tag_notes_tag_id_note_id_unique" UNIQUE("tag_id","note_id")
 );
 --> statement-breakpoint
 CREATE TABLE "notes"."tags" (

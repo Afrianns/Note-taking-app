@@ -11,7 +11,8 @@
                             <UIcon name="mdi:tag-outline" :size="25" />
                             <p>Tags</p>
                         </div>
-                        <UInputMenu v-if="items.length && (getValue()?.tags.length >= 1 || state.title != null)"
+                        <UInputMenu
+                            v-if="items.length > 0 && (getValue()?.tags.length >= 1 || state.title != null) || items.length <= 0 && getValue()?.tags.length <= 0"
                             create-item multiple :items="items" v-model="currentNoteTags" @create="onCreate"
                             class="w-full border-0 ring-0" :highlight="false"
                             :ui="{ base: 'ring-0 focus-visible:ring-0 border-0 has-focus-visible:ring-0 p-0' }" />
@@ -54,9 +55,9 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { toast as vueToast } from 'vue-sonner'
-import { createTag, getSingleNote, upsertTag } from '~/lib/fetch'
+import { createTag, getSingleNote, insertNote, upsertTag } from '~/lib/fetch'
 import { useSessionStore } from '~/store/storage'
-import { noteExistType, type inputTagType, type noteType, type tagType } from "~/types/types"
+import { noteExistType, type inputTagType, type noteTagType, type noteType, type tagType } from "~/types/types"
 
 const route = useRoute()
 const storage = useSessionStore()
@@ -89,8 +90,7 @@ const onCreate = async (item: string) => {
         });
     }
 }
-
-currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
+if (getValue()?.tags) currentNoteTags.value = getValue()?.tags.map((tag: noteTagType) => ({ value: tag.id, label: tag.name }));
 
 const state = reactive({
     title: getValue()?.title,
@@ -119,7 +119,7 @@ watch(() => currentNoteTags.value, (newData: inputTagType[], oldData: inputTagTy
         })
     }
     if (deletedValue) {
-        getValue().tags = getValue().tags.filter((tag) => tag.name != deletedValue.label);
+        getValue().tags = getValue().tags.filter((tag: noteTagType) => tag.name != deletedValue.label);
     }
 })
 
@@ -135,40 +135,31 @@ const getNote = () => {
     state.content = getValue()?.content
     state.updatedAt = getValue()?.updatedAt
 
-    currentNoteTags.value = getValue()?.tags.map((tag) => ({ value: tag.id, label: tag.name }));
+    currentNoteTags.value = getValue()?.tags.map((tag: noteTagType) => ({ value: tag.id, label: tag.name }));
 }
 
 async function onSubmit(event: FormSubmitEvent<typeof state>) {
     loadingState.value = true
+    const result = await insertNote(event.data, getValue().id);
+    upsertNoteTag(currentNoteTags.value);
 
-    vueToast.info("Note successfully Updated", {
-        description: `Your note title: ${event.data.title} updated`,
-    });
-    // toast.add({ title: 'Success', description: `Note successfuly Updated. ${event.data} and ${currentNoteTags.value}`, color: 'success' })
+    console.log(event.data, currentNoteTags.value, result);
 
-    console.log(event.data, currentNoteTags.value);
-    // const result: completeNoteType = await $fetch("/api/note/updateCompletedNote", {
-    //     method: "POST",
-    //     body: {
-    //         id: getValue().id,
-    //         title: event.data.title,
-    //         content: event.data.content
-    //     }
-    // })
+    if (result[0] && !result[1]) {
+        vueToast.info("Note successfully Updated", {
+            description: `Your note title: ${event.data.title} updated`,
+        });
+    }
 
-    // if (result[0] && !result[1]) {
-    //     toast.add({ title: 'Success', description: 'Successfuly updated.', color: 'success' })
-    // }
-
-    // if (!result[0] && result[1]) {
-    //     resetToPrevSaved(route.params.id as string)
-    //     toast.add({ title: 'Failed', description: result[1] as string, color: 'error' })
-    // }        // upsertNoteTag(result[0][0] as unknown as tagType)
-    //     storage.tags.push(result[0][0] as unknown as tagType);
+    if (!result[0] && result[1]) {
+        vueToast.info("Note failed to updated", {
+            description: `Field can't be empty`,
+        });
+    }
     loadingState.value = false
 }
 
-const upsertNoteTag = async (tag: tagType) => {
+const upsertNoteTag = async (tag: inputTagType[]) => {
 
     const result = await upsertTag(tag, getValue().id)
     // if (result) {
@@ -178,6 +169,7 @@ const upsertNoteTag = async (tag: tagType) => {
     //     })
     //     console.log(result[0])
     // }
+    console.log(result);
 
 }
 
