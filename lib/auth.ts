@@ -9,7 +9,7 @@ import * as schema from "../server/schema/auth-schema";
 
 const config = useRuntimeConfig();
 
-const resend = new Resend(config.resendUrl);
+const resend = new Resend(config.RESEND_API as string);
 
 export const auth = betterAuth({
   emailAndPassword: {

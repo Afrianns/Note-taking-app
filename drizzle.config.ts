@@ -7,6 +7,6 @@ export default defineConfig({
   out: "./server/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: config.nuxtDatabaseUrl,
+    url: config.NUXT_DB_URL as string,
   },
 });
