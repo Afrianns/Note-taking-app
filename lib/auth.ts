@@ -8,7 +8,7 @@ import { db } from "../server/db/db";
 import * as schema from "../server/schema/auth-schema";
 
 // config({ path: ".env" });
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -16,7 +16,7 @@ export const auth = betterAuth({
   },
   user: {
     changeEmail: {
-      enabled: true, 
+      enabled: true,
       sendChangeEmailVerification: async (
         { user, newEmail, url, token },
         request
