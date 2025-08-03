@@ -5,8 +5,8 @@ export default defineNuxtConfig({
   modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxt/ui", "@pinia/nuxt"],
   css: ["~/assets/css/main.css"],
   runtimeConfig: {
-    nuxtDatabaseUrl: import.meta.env.NUXT_DATABASE_URL,
-    resendUrl: import.meta.env.RESEND_API_KEY,
+    nuxtDatabaseUrl: process.env.NUXT_DATABASE_URL,
+    resendUrl: process.env.RESEND_API_KEY,
   },
   // routeRules: {
   //   "/archived": { ssr: false },
