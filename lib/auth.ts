@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { Resend } from "resend";
 
 // import { config } from "dotenv";
-import { db } from "../server/db/db";
+import { getDb } from "../server/db/db";
 
 import * as schema from "../server/schema/auth-schema";
 
@@ -67,7 +67,7 @@ export const auth = betterAuth({
       });
     },
   },
-  database: drizzleAdapter(db, {
+  database: drizzleAdapter(getDb(), {
     provider: "pg",
     schema: {
       ...schema,
