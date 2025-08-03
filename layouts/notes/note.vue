@@ -13,18 +13,17 @@
                                         <UInput v-model="state.title" placeholder="Enter your title" class="w-full" />
                                     </UFormField>
                                     <USeparator class="my-2" />
-                                    <UtilsLoadingComp :loadingState="loadingState" color="neutral">
+                                    <UtilsLoading :loadingState="loadingState" color="neutral">
                                         <UButton type="submit" color="neutral">
                                             Create
                                         </UButton>
-                                    </UtilsLoadingComp>
+                                    </UtilsLoading>
                                 </UForm>
                             </template>
                         </UModal>
                         <div class="my-5 h-[calc(100vh-150px)] overflow-y-auto">
                             <template v-if="storage.notesExist == noteExistType.EXIST && storage.notes.length > 0">
-                                <notesNoteCard page="dashboard"
-                                    v-for="(note, idx) in filteringSearch(storage.notes, searching)" :key="note.id"
+                                <notesNoteCard page="dashboard" v-for="(note, idx) in filterSearch" :key="note.id"
                                     :idx="idx" :note="note" />
                             </template>
 
@@ -49,8 +48,7 @@
                         <div class="mb-5 h-full overflow-y-auto">
                             <template
                                 v-if="storage.notesArchivedExist == notesArchivedExistType.EXIST && storage.archivedNotes.length > 0">
-                                <notesNoteCard page="archived"
-                                    v-for="(note, idx) in filteringSearch(storage.archivedNotes, searching)"
+                                <notesNoteCard page="archived" v-for="(note, idx) in filterArchivedSearch"
                                     :key="note.id" :idx="idx" :note="note" />
                             </template>
 
@@ -80,10 +78,10 @@
                     <USeparator orientation="vertical" class="h-screen" />
                     <div class="mt-18 p-5 space-y-3 w-full max-w-[200px]">
                         <template v-if="$route.name == 'dashboard-id'">
-                            <utilsArchivableComp name="Archived" />
+                            <utilsArchivable name="Archived" />
                         </template>
                         <template v-if="$route.name == 'archived-id'">
-                            <utilsArchivableComp name="Unarchived" />
+                            <utilsArchivable name="Unarchived" />
                         </template>
                         <UModal v-model:open="openConfirmationDelete" title="Delete Note"
                             description="Confirmation Delete Note" :ui="{ footer: 'justify-end' }">
@@ -121,8 +119,6 @@ const slotData = defineSlots()
 
 const storage = useSessionStore()
 
-type noteKey = keyof noteType
-
 const openCreateInitialNote = ref(false)
 const openConfirmationDelete = ref(false)
 
@@ -152,30 +148,39 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
 const filterByTag = (notes: noteType[]) => {
 
     const query = useRoute().query
-    if (Object.keys(query).length >= 1) {
-        return notes.filter((row) => row.tags.some((tag) => tag.name == query.q))
+    if (Object.keys(query).length >= 1 && query.tag) {
+        return notes.filter((row) => row.tags.some((tag) => tag.name == query.tag))
     } else {
         return notes;
     }
 }
 
-const filteringSearch = (notes: noteType[], searchQuery: { search: string }) => {
+const filterSearch = computed(() => filteringSearch(storage.notes))
+const filterArchivedSearch = computed(() => filteringSearch(storage.archivedNotes))
 
-    if (searchQuery.search.trim() != '') {
-        let result = filterByTag(notes).filter((row) => {
-            return Object.keys(row).some((idx) => {
-                return String(row[idx as noteKey]).toLowerCase().indexOf(searchQuery.search.toLowerCase()) > -1
+type noteKey = keyof noteType
+
+const filteringSearch = (notes: noteType[]) => {
+    let searchQuery = { ...useRoute().query }
+
+    if (searchQuery && searchQuery.q) {
+
+        let search = searchQuery.q as string;
+        if (search.trim() != '') {
+            let result = filterByTag(notes).filter((row) => {
+                return Object.keys(row).some((idx) => {
+                    return String(row[idx as noteKey]).toLowerCase().indexOf(search.toLowerCase()) > -1
+                })
             })
-        })
-        return result;
-    } else {
-        return filterByTag(notes);
+            return result;
+        }
     }
+    return filterByTag(notes);
 }
 
 const doDeleteNote = async (id: string, routeName: string) => {
     loadingState.value = true
-    const result = await deleteNote(id.split("_")[1])
+    const result = await deleteNote(id)
 
     if (result) {
         if (routeName == 'dashboard-id') {
@@ -185,7 +190,7 @@ const doDeleteNote = async (id: string, routeName: string) => {
         }
 
         navigateTo(`/${routeName.split('-')[0]}`)
-        console.log(storage.notes, storage.archivedNotes, id.split("_"))
+
         vueToast.success("Successfully deleted", {
             description: 'The note has been deleted.',
         });
@@ -201,7 +206,7 @@ const createInitialNote = async (title: string) => {
         vueToast.success("Successfully created", {
             description: 'The note has been created.',
         });
-        storage.addNote(result)
+        storage.addNote(result as unknown as noteType)
     }
 
     loadingState.value = false

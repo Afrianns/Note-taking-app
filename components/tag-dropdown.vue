@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem } from '@nuxt/ui';
 
-const props = defineProps(["tagName"])
-
-const selectFilter = ref((!!useRoute().query.q && useRoute().query.q == props.tagName))
-
-const router = useRouter();
+const props = defineProps(["tagName", "checkFilter"])
+const emit = defineEmits(["checklistFilter"])
 
 const items = computed(() =>
     [
@@ -13,9 +10,9 @@ const items = computed(() =>
             label: 'Filter by',
             icon: 'i-lucide-user',
             type: 'checkbox' as const,
-            checked: selectFilter.value,
+            checked: props.checkFilter,
             onUpdateChecked(checked: boolean) {
-                selectFilter.value = checked
+                emit("checklistFilter", checked)
                 filterByTag(props.tagName)
             }, onSelect(e: Event) {
                 e.preventDefault()
@@ -30,14 +27,8 @@ const items = computed(() =>
 
 
 const filterByTag = (name: string) => {
-    console.log(useRoute().query)
-    if (useRoute().query.q) {
-        router.replace({ query: {} })
-    } else {
-        router.push({ query: { q: name } })
-    }
+    useQueryFilterTag(name)
 }
-
 
 </script>
 

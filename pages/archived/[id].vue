@@ -29,7 +29,7 @@
                             <UIcon name="mingcute:time-line" :size="25" />
                             <p>Last Edited</p>
                         </div>
-                        <p v-if="state.updatedAt != null">{{ useConvertDate(state.updatedAt) }}</p>
+                        <p v-if="state.updatedAt != null">{{ convertDate(state.updatedAt) }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>

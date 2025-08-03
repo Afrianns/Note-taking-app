@@ -26,7 +26,7 @@
                             <UIcon name="mingcute:time-line" :size="25" />
                             <p>Last Edited</p>
                         </div>
-                        <p v-if="state.updatedAt != null">{{ useConvertDate(state.updatedAt) }}</p>
+                        <p v-if="state.updatedAt != null">{{ convertDate(state.updatedAt) }}</p>
                         <USkeleton v-else class="h-5 w-28" />
                     </section>
                 </div>
@@ -68,8 +68,12 @@ const currentNoteTags = ref<inputTagType[]>([]);
 const items = computed(() => storage.tags.map((tag: tagType) => ({ value: tag.id, label: tag.name })))
 
 const getValue = () => {
-    const id = (route.params.id as string).split("_")[0]
-    return storage.notes[id as unknown as number]
+    // const id = (route.params.id as string).split("_")[0]
+
+    let result = storage.notes.find((note) => note.id == (route.params.id as string));
+    // console.log(storage.notes[id as unknown as number], storage.notes.find((note) => note.id == (route.params.id as string).split("_")[1]))
+
+    return result as noteType;
 }
 
 const onCreate = async (item: string) => {
@@ -176,8 +180,10 @@ const upsertNoteTag = async (tag: inputTagType[]) => {
 const resetToPrevSaved = async (id: string) => {
     const result = await getSingleNote(id);
 
-    if (result) {
-        storage.notes[(route.params.id as string).split("_")[0] as unknown as number] = result as unknown as noteType
+    let indexNote = storage.notes.findIndex((note) => note.id == (route.params.id as string))
+
+    if (result && indexNote != -1) {
+        storage.notes[indexNote] = result as unknown as noteType
         getNote()
     }
 }

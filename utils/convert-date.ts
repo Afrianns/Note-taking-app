@@ -1,4 +1,4 @@
-export const useConvertDate = (date: Date) => {
+export const convertDate = (date: Date) => {
   const toDate = new Date(date);
   const months = [
     "January",

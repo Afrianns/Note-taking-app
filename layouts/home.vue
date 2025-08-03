@@ -19,14 +19,15 @@
 
                 <h3 class="my-2 text-gray-500">Tags</h3>
 
-                <div v-if="storage.tags.length > 0" v-for="tag in storage.tags" class="space-y-5 group">
+                <div v-if="storage.tags.length > 0" v-for="(tag, idx) in storage.tags" class="space-y-5 group">
                     <div
                         class="flex items-center justify-between gap-x-3 group-hover:bg-gray-200 dark:group-hover:bg-main-950 py-2 px-3 cursor-pointer mt-1">
                         <div class="flex items-center gap-x-2">
                             <UIcon name="lucide:tag" />
                             <p>{{ tag.name }}</p>
                         </div>
-                        <TagDropdown :tagName="tag.name" />
+                        <TagDropdown :tagName="tag.name" @checklistFilter="(a: boolean) => checkingTagFilter(a, idx)"
+                            :checkFilter="tagFilterCheck[idx]" />
                     </div>
                 </div>
                 <div v-else-if="storage.tags.length <= 0 && storage.loadedAll >= 3">
@@ -52,7 +53,7 @@
                 <h2 v-show="checkLinkName('archived')" class="font-bold">All Archived Notes</h2>
                 <h2 v-show="checkLinkName('setting')" class="font-bold">Settings</h2>
                 <div class="flex items-center gap-x-3">
-                    <UInput ref="input" icon="i-lucide-search" placeholder="Search..." v-model="searchQuery">
+                    <UInput ref="input" icon="i-lucide-search" placeholder="Search..." v-model="query">
                         <template #trailing>
                             <UKbd value="/" />
                         </template>
@@ -67,13 +68,13 @@
                     </nuxt-link>
                 </div>
             </div>
-            <slot :search="searchQuery" />
+            <slot search="" />
         </div>
     </div>
 </template>
 <script setup lang="ts">
 
-import { sendVerificationEmail } from '~/lib/auth-client'
+import { sendVerificationEmail } from '~/lib/auth-client';
 import { useSessionStore } from '~/store/storage';
 
 let storage = useSessionStore();
@@ -82,16 +83,38 @@ if (!storage.credential.id) {
     storage.getUserCredential();
 }
 
-const searchQuery = ref('');
+const tagFilterCheck = ref<boolean[]>([]);
 
 const input = useTemplateRef('input')
-
 const toast = useToast()
 
 defineShortcuts({
     '/': () => {
         input.value?.inputRef?.focus()
     }
+})
+
+const query = ref('');
+
+watch(() => storage.tags, () => {
+    populateTagFilterCheck()
+})
+
+const checkingTagFilter = (param: boolean, idx: number) => {
+    populateTagFilterCheck();
+    tagFilterCheck.value[idx] = param
+}
+
+const populateTagFilterCheck = () => {
+    let tempTagFilterCheck = [];
+    for (const _ of storage.tags) {
+        tempTagFilterCheck.push(false);
+    }
+    tagFilterCheck.value = tempTagFilterCheck
+}
+
+watch(() => query.value, () => {
+    useQueryFilterSearch(query.value)
 })
 
 const checkLinkName = (name: string) => (useRoute().name as string)?.split('-')[0] == name
