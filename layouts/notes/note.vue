@@ -1,6 +1,6 @@
 <template>
     <UApp>
-        <NuxtLayout name="home" v-slot="searching">
+        <NuxtLayout name="home">
             <div class="flex">
                 <div class="p-5 pl-5 w-full max-w-[18rem] mt-18 h-[calc(100vh-78px)]">
                     <div v-if="$route.name == 'dashboard' || $route.name == 'dashboard-id'">
@@ -96,10 +96,10 @@
                             <template #footer="{ close }">
                                 <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
 
-                                <UtilsLoadingComp :loadingState="loadingState" color="neutral">
+                                <utilsLoading :loadingState="loadingState" color="neutral">
                                     <UButton label="Delete" color="neutral"
                                         @click="doDeleteNote($route.params.id as string, $route.name as string)" />
-                                </UtilsLoadingComp>
+                                </utilsLoading>
                             </template>
                         </UModal>
                     </div>

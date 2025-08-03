@@ -15,7 +15,7 @@
             </span>
         </div>
         <span class="text-muted text-xs font-medium">{{
-            useConvertDate(note.createdAt)
+            convertDate(note.createdAt)
             }}</span>
     </nuxt-link>
 </template>

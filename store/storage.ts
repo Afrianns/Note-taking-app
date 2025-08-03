@@ -115,5 +115,9 @@ export const useSessionStore = defineStore("sessionStore", {
         this.notesArchivedExist = notesArchivedExistType.EXIST;
       }
     },
+
+    removeTagById(id: number) {
+      this.tags.splice(id, 1);
+    },
   },
 });

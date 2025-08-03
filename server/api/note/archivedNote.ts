@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import { notes, tag_notes } from "../../schema/notes-schema";
+import { notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);

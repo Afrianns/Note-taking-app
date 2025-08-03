@@ -86,3 +86,14 @@ export const deleteNote = async (noteId: string) => {
 
   return result;
 };
+
+export const deleteTag = async (tagId: string) => {
+  const result = await $fetch("/api/tag/deleteTag", {
+    method: "POST",
+    body: {
+      tagId: tagId,
+    },
+  });
+
+  return result;
+};

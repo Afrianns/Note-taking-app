@@ -11,10 +11,10 @@
 
         <template #footer="{ close }">
             <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-            <UtilsLoadingComp :loadingState="loadingArchivableState" color="neutral">
+            <utilsLoading :loadingState="loadingArchivableState" color="neutral">
                 <UButton label="Confirm" color="neutral"
                     @click="checkTypeArchivable($route.params.id as string, name)" />
-            </UtilsLoadingComp>
+            </utilsLoading>
         </template>
     </UModal>
 </template>

@@ -42,9 +42,9 @@
             <section>
                 <USeparator />
                 <div class="flex justify-start gap-x-5 items-center mt-5">
-                    <UtilsLoadingComp :loadingState="loadingState" color="primary">
+                    <utilsLoading :loadingState="loadingState" color="primary">
                         <UButton label="Save" type="submit" />
-                    </UtilsLoadingComp>
+                    </utilsLoading>
                     <UButton label="Cancel" color="neutral" variant="soft"
                         @click="resetToPrevSaved($route.params.id as string)" />
                 </div>
@@ -72,7 +72,6 @@ const getValue = () => {
 
     let result = storage.notes.find((note) => note.id == (route.params.id as string));
     // console.log(storage.notes[id as unknown as number], storage.notes.find((note) => note.id == (route.params.id as string).split("_")[1]))
-
     return result as noteType;
 }
 
@@ -132,7 +131,10 @@ watch(() => state.content, (data: string | null) => getValue().content = data)
 watch(() => state.title, (data: string | null) => getValue().title = data)
 
 // load first time since data async
-watch(() => storage.notes, () => getNote())
+watch(() => storage.notes, () => {
+    if (getValue() == undefined) navigateTo("/dashboard");
+    getNote()
+})
 
 const getNote = () => {
     state.title = getValue()?.title

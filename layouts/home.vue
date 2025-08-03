@@ -119,6 +119,7 @@ watch(() => query.value, () => {
 
 const checkLinkName = (name: string) => (useRoute().name as string)?.split('-')[0] == name
 
+
 const verifyEmail = async () => {
     if (storage.credential) {
         const result = await sendVerificationEmail({
