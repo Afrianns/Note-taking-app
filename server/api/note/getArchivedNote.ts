@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
-import { db } from "../../db/db";
+import { getDb } from "../../db/db";
 import { user } from "../../schema/auth-schema";
-import { notes } from "../../schema/notes-schema";
+import { notes, tag_notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-  console.log(data);
+  const db = getDb();
   const result = await db
     .select({
       id: notes.id,

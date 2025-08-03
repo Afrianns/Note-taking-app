@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
-import { db } from "~/server/db/db";
+import { getDb } from "~/server/db/db";
 import { notes } from "~/server/schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-
+  const db = getDb();
   try {
     if (data.title != "" && data.id != "") {
       const result = await db
@@ -15,9 +15,9 @@ export default defineEventHandler(async (event) => {
         })
         .where(eq(notes.id, data.id))
         .execute();
-      return [result, null]
+      return [result, null];
     } else {
-      return [null, "data cannot be empty"]
+      return [null, "data cannot be empty"];
     }
   } catch (err: any) {
     throw createError({ statusCode: 500, statusMessage: err.message });

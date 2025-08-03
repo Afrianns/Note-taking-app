@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
-import { db } from "~/server/db/db";
+import { getDb } from "~/server/db/db";
 import { tags } from "~/server/schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-
+  const db = getDb();
   try {
     if (data.tagId) {
       await db.delete(tags).where(eq(tags.id, data.tagId)).execute();

@@ -1,9 +1,10 @@
 import { inputTagType } from "~/types/types";
-import { db } from "../../db/db";
+import { getDb } from "../../db/db";
 import { tags, tag_notes } from "../../schema/notes-schema";
 import { eq } from "drizzle-orm";
 
 export default defineEventHandler(async (event) => {
+  const db = getDb();
   const dataParse = await readBody(event);
 
   if (!dataParse.noteId) return;
@@ -34,6 +35,7 @@ export default defineEventHandler(async (event) => {
 });
 
 const deleteRelatedNoteTag = async (noteId: string) => {
+  const db = getDb();
   try {
     await db.delete(tag_notes).where(eq(tag_notes.noteId, noteId)).execute();
 

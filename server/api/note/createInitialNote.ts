@@ -1,6 +1,7 @@
-import { db } from "~/server/db/db";
+import { getDb } from "~/server/db/db";
 import { notes } from "~/server/schema/notes-schema";
 export default defineEventHandler(async (event) => {
+  const db = getDb();
   const data = await readBody(event);
   try {
     const result = await db

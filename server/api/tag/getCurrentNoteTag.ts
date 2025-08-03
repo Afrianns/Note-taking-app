@@ -1,7 +1,8 @@
-import { db } from "../../db/db";
+import { getDb } from "../../db/db";
 import { tag_notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async () => {
+  const db = getDb();
   try {
     const result = await db
       .select({

@@ -1,10 +1,10 @@
-import { eq, getTableColumns } from "drizzle-orm";
-import { db } from "../../db/db";
-import { user } from "../../schema/auth-schema";
+import { eq } from "drizzle-orm";
+import { getDb } from "../../db/db";
 import { notes, tag_notes } from "../../schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
+  const db = getDb();
 
   let isArchived = false;
 

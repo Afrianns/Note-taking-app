@@ -1,9 +1,9 @@
-import { db } from "~/server/db/db";
+import { getDb } from "~/server/db/db";
 import { tags } from "~/server/schema/notes-schema";
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
-
+  const db = getDb();
   try {
     if (data.nameTag.length >= 3) {
       const result = await db
