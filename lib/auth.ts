@@ -7,8 +7,9 @@ import { db } from "../server/db/db";
 
 import * as schema from "../server/schema/auth-schema";
 
-// config({ path: ".env" });
-const resend = new Resend(import.meta.env.RESEND_API_KEY);
+const config = useRuntimeConfig();
+
+const resend = new Resend(config.resendUrl);
 
 export const auth = betterAuth({
   emailAndPassword: {
