@@ -2,14 +2,9 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { Resend } from "resend";
 
-// import { config } from "dotenv";
 import { getDb } from "../server/db/db";
 
 import * as schema from "../server/schema/auth-schema";
-
-const config = useRuntimeConfig();
-
-const resend = new Resend(config.RESEND_API as string);
 
 export const auth = betterAuth({
   emailAndPassword: {
@@ -22,6 +17,9 @@ export const auth = betterAuth({
         { user, newEmail, url, token },
         request
       ) => {
+        const config = useRuntimeConfig();
+        const resend = new Resend(config.RESEND_API as string);
+
         const res = await resend.emails.send({
           from: "Afrianns <onboarding@resend.dev>",
           to: user.email,
@@ -46,6 +44,9 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
+      const config = useRuntimeConfig();
+      const resend = new Resend(config.RESEND_API as string);
+
       const res = await resend.emails.send({
         from: "Afrianns <onboarding@resend.dev>",
         to: user.email,
