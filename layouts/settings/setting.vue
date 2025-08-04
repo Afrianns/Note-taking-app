@@ -1,8 +1,8 @@
 <template>
     <NuxtLayout name="home">
-        <div class="flex min-h-screen h-full">
-            <div class="p-5 pl-5 w-full max-w-[20rem] mt-18">
-                <ul class="flex flex-col gap-y-3">
+        <div class="flex max-lg:flex-col h-full">
+            <div class="p-5 pl-5 w-full lg:max-w-[18rem] mt-18">
+                <ul class="flex lg:flex-col gap-y-3 max-lg:gap-x-3">
                     <li>
                         <nuxt-link to="/setting"
                             class="flex justify-between items-center py-2 px-3 rounded-md cursor-pointer" :class="{
@@ -17,8 +17,8 @@
                                 </svg>
                                 <p>Preferences</p>
                             </div>
-                            <svg v-show="$route.name == 'setting'" xmlns="http://www.w3.org/2000/svg" width="8"
-                                height="16" viewBox="0 0 12 24">
+                            <svg v-show="$route.name == 'setting'" class="max-lg:hidden"
+                                xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 12 24">
                                 <path fill="currentColor" fill-rule="evenodd"
                                     d="M10.157 12.711L4.5 18.368l-1.414-1.414l4.95-4.95l-4.95-4.95L4.5 5.64l5.657 5.657a1 1 0 0 1 0 1.414" />
                             </svg>
@@ -35,15 +35,15 @@
                                 </svg>
                                 <p>Account</p>
                             </div>
-                            <svg v-show="$route.name == 'setting-account'" xmlns="http://www.w3.org/2000/svg" width="8"
-                                height="16" viewBox="0 0 12 24">
+                            <svg v-show="$route.name == 'setting-account'" class="max-lg:hidden"
+                                xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 12 24">
                                 <path fill="currentColor" fill-rule="evenodd"
                                     d="M10.157 12.711L4.5 18.368l-1.414-1.414l4.95-4.95l-4.95-4.95L4.5 5.64l5.657 5.657a1 1 0 0 1 0 1.414" />
                             </svg>
                         </nuxt-link>
                     </li>
-                    <USeparator />
-                    <div class="group">
+                    <USeparator class="hidden lg:block" />
+                    <div class="group max-lg:ml-auto">
                         <li @click="logoutFunction()"
                             class="flex justify-between items-center py-2 px-3 rounded-md cursor-pointer group-hover:bg-[#ffd8d8] group-hover:dark:bg-[#2f151e]">
                             <div class="flex items-center gap-x-3 group-hover:text-primary-400">
@@ -57,8 +57,9 @@
                     </div>
                 </ul>
             </div>
-            <USeparator orientation="vertical" class="min-h-screen" />
-            <div class="p-5 text-left mx-auto max-w-[900px] w-full h-fit mt-18">
+            <USeparator orientation="vertical" class="h-full" />
+            <USeparator class="lg:hidden" />
+            <div class="p-5 text-left mx-auto lg:max-w-[900px] w-full lg:mt-18">
                 <slot />
             </div>
         </div>

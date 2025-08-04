@@ -2,7 +2,8 @@
     <UApp>
         <NuxtLayout name="home">
             <div class="flex">
-                <div class="p-5 pl-5 w-full max-w-[18rem] mt-18 h-[calc(100vh-78px)]">
+                <div class="p-5 pl-5 w-full lg:max-w-[18rem] mt-18 h-[calc(100vh-78px)]"
+                    :class="[$route.name == 'dashboard-id' || $route.name == 'archived-id' ? 'max-lg:hidden' : 'max-lg:block']">
                     <div v-if="$route.name == 'dashboard' || $route.name == 'dashboard-id'">
                         <UModal v-model:open="openCreateInitialNote" title="Create New Note"
                             description="Get starter with your note." :ui="{ footer: 'justify-end' }">
@@ -71,39 +72,31 @@
                     </div>
                 </div>
                 <USeparator orientation="vertical" class="h-screen" />
-                <div class="p-5 flex gap-x-16 justify-left text-left mx-auto max-w-[1000px] w-full mt-18">
-                    <slot />
-                </div>
-                <template v-if="$route.name == 'dashboard-id' || $route.name == 'archived-id'">
-                    <USeparator orientation="vertical" class="h-screen" />
-                    <div class="mt-18 p-5 space-y-3 w-full max-w-[200px]">
-                        <template v-if="$route.name == 'dashboard-id'">
-                            <utilsArchivable name="Archived" />
-                        </template>
-                        <template v-if="$route.name == 'archived-id'">
-                            <utilsArchivable name="Unarchived" />
-                        </template>
-                        <UModal v-model:open="openConfirmationDelete" title="Delete Note"
-                            description="Confirmation Delete Note" :ui="{ footer: 'justify-end' }">
-
-                            <UButton icon="tabler:trash" color="neutral" variant="outline" size="lg" class="text-center"
-                                block :ui="{ base: 'w-full' }">
-                                Delete Note</UButton>
-                            <template #body>
-                                <h1>ARE YOU SURE WANT TO DELETE THIS NOTE?</h1>
-                            </template>
-
-                            <template #footer="{ close }">
-                                <UButton label="Cancel" color="neutral" variant="outline" @click="close" />
-
-                                <utilsLoading :loadingState="loadingState" color="neutral">
-                                    <UButton label="Delete" color="neutral"
-                                        @click="doDeleteNote($route.params.id as string, $route.name as string)" />
-                                </utilsLoading>
-                            </template>
-                        </UModal>
+                <div class="flex mt-18 max-lg:flex-col-reverse w-full"
+                    :class="[$route.name == 'dashboard-id' || $route.name == 'archived-id' ? 'max-lg:flex' : 'max-lg:hidden']">
+                    <div
+                        class="p-5 flex gap-x-16 justify-left text-left mx-auto max-w-[1000px] w-full max-lg:h-[calc(100vh-149px)]">
+                        <slot />
                     </div>
-                </template>
+                    <template v-if="$route.name == 'dashboard-id' || $route.name == 'archived-id'">
+                        <USeparator orientation="vertical" class="lg:h-[calc(100vh-78px)] hidden lg:block" />
+                        <USeparator class="w-full lg:hidden" />
+                        <div
+                            class="p-5 w-full lg:max-w-[200px] gap-x-2 flex justify-between items-center lg:block lg:space-y-3">
+                            <nuxt-link to="/dashboard">
+                                <UButton icon="i-lucide-arrow-left" label="Back" size="lg" color="neutral"
+                                    class="lg:hidden" variant="subtle" />
+                            </nuxt-link>
+                            <template v-if="$route.name == 'dashboard-id'">
+                                <utilsArchivable name="Archived" />
+                            </template>
+                            <template v-if="$route.name == 'archived-id'">
+                                <utilsArchivable name="Unarchived" />
+                            </template>
+                            <utilsDeletable />
+                        </div>
+                    </template>
+                </div>
             </div>
         </NuxtLayout>
     </UApp>
@@ -111,7 +104,7 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '@nuxt/ui';
 import { toast as vueToast } from 'vue-sonner';
-import { deleteNote, insertInitialNote } from '~/lib/fetch';
+import { insertInitialNote } from '~/lib/fetch';
 import { useSessionStore } from '~/store/storage';
 import { type noteType, noteExistType, notesArchivedExistType } from "~/types/types";
 
@@ -120,7 +113,6 @@ const slotData = defineSlots()
 const storage = useSessionStore()
 
 const openCreateInitialNote = ref(false)
-const openConfirmationDelete = ref(false)
 
 const loadingState = ref(false)
 
@@ -176,27 +168,6 @@ const filteringSearch = (notes: noteType[]) => {
         }
     }
     return filterByTag(notes);
-}
-
-const doDeleteNote = async (id: string, routeName: string) => {
-    loadingState.value = true
-    const result = await deleteNote(id)
-
-    if (result) {
-        if (routeName == 'dashboard-id') {
-            storage.removeNoteById(id)
-        } else {
-            storage.removeArchivedNoteById(id)
-        }
-
-        navigateTo(`/${routeName.split('-')[0]}`)
-
-        vueToast.success("Successfully deleted", {
-            description: 'The note has been deleted.',
-        });
-    }
-    loadingState.value = false
-    openConfirmationDelete.value = false;
 }
 
 const createInitialNote = async (title: string) => {

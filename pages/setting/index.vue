@@ -1,10 +1,10 @@
 <template>
     <NuxtLayout name="settings-setting">
-        <div class="flex gap-x-4 my-3">
+        <div class="flex max-lg:flex-col gap-x-4 my-3">
             <URadioGroup indicator="end" size="xl" color="primary" v-model="radioValue"
-                :ui="{ item: 'mb-3 w-[25rem] flex items-center', description: 'text-main-700' }" @click="setPreferences"
-                variant="card" :items="items" />
-            <div class="mt-auto mx-auto">
+                :ui="{ item: 'mb-3 lg:w-[25rem] flex items-center', description: 'text-main-700' }"
+                @click="setPreferences" variant="card" :items="items" />
+            <div class="mt-10 lg:mt-auto mx-auto">
                 <UButton label="Save" type="submit" variant="soft" class="self-end px-10" size="xl" />
             </div>
         </div>

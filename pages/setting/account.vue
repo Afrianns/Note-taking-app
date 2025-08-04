@@ -1,8 +1,8 @@
 <template>
     <NuxtLayout name="settings-setting">
         <UForm :state="stateChangeInfo" class="flex flex-col gap-x-4">
-            <div class="flex gap-x-4 my-3">
-                <div class="w-[25rem] space-y-3">
+            <div class="flex max-lg:flex-col gap-x-4 my-3">
+                <div class="w-full lg:w-[25rem] space-y-3">
                     <p class="text-muted mb-4 font-bold text-lg">
                         Update Account Information
                     </p>
@@ -23,7 +23,7 @@
                             email for confirmation, otherwise email will not update</span>
                     </div>
                 </div>
-                <div class=" mt-auto mx-auto">
+                <div class="mt-10 lg:mt-auto mx-auto">
                     <UButton v-if="!isUpdateUserInfoMessage" label="Save" type="submit" variant="soft" class="px-10"
                         @click="updateUserInfo()" size="xl" />
                     <UButton v-else label="Save" type="submit" variant="soft" class="px-10" loading size="xl" />
@@ -32,8 +32,8 @@
         </UForm>
         <USeparator class="my-3" />
         <UForm :state="stateChangePassword" class="flex flex-col gap-x-4">
-            <div class="flex gap-x-4 my-3">
-                <div class="w-[25rem] space-y-3">
+            <div class="flex max-lg:flex-col gap-x-4 my-3">
+                <div class="w-full lg:w-[25rem] space-y-3">
                     <p class="text-muted mb-4 font-bold text-lg">
                         Update Password
                     </p>
@@ -50,7 +50,7 @@
                     </UFormField>
                     <input-account :stateAcc="stateChangePassword" @password-score="(score) => passwordScore = score" />
                 </div>
-                <div class="mt-auto mx-auto">
+                <div class="mt-10 lg:mt-auto mx-auto">
                     <UButton label="Save" type="submit" variant="soft" class="px-10" @click="updateUserPassword()"
                         size="xl" />
                 </div>
