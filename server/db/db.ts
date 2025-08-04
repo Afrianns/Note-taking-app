@@ -3,6 +3,6 @@ import { neon } from "@neondatabase/serverless";
 
 export const getDb = () => {
   const config = useRuntimeConfig();
-  const postgres = neon(config.NUXT_DB_URL);
+  const postgres = neon(config.nuxtDbUrl);
   return drizzle({ client: postgres });
 };
