@@ -18,7 +18,7 @@ export const auth = betterAuth({
         request
       ) => {
         const config = useRuntimeConfig();
-        const resend = new Resend(config.resendAPI as string);
+        const resend = new Resend(config.resendKey as string);
 
         const res = await resend.emails.send({
           from: "Afrianns <onboarding@resend.dev>",
@@ -45,7 +45,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
       const config = useRuntimeConfig();
-      const resend = new Resend(config.resendAPI as string);
+      const resend = new Resend(config.resendKey as string);
 
       const res = await resend.emails.send({
         from: "Afrianns <onboarding@resend.dev>",
