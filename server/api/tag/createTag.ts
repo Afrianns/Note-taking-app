@@ -1,5 +1,8 @@
 import { getDb } from "~/server/db/db";
 import { tags } from "~/server/schema/notes-schema";
+import { noteTagType, tagType } from "~/types/types";
+
+type tagCreateType = [a: tagType | null, b: string | null];
 
 export default defineEventHandler(async (event) => {
   const data = await readBody(event);
@@ -13,9 +16,9 @@ export default defineEventHandler(async (event) => {
         })
         .returning()
         .execute();
-      return [result, null];
+      return { data: result, error: null };
     } else {
-      return [null, "Tag too short"];
+      return { data: null, error: "Tag too short" };
     }
   } catch (err: any) {
     throw createError({ statusCode: 500, statusMessage: err.message });

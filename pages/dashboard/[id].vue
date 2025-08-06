@@ -68,10 +68,7 @@ const currentNoteTags = ref<inputTagType[]>([]);
 const items = computed(() => storage.tags.map((tag: tagType) => ({ value: tag.id, label: tag.name })))
 
 const getValue = () => {
-    // const id = (route.params.id as string).split("_")[0]
-
     let result = storage.notes.find((note) => note.id == (route.params.id as string));
-    // console.log(storage.notes[id as unknown as number], storage.notes.find((note) => note.id == (route.params.id as string).split("_")[1]))
     return result as noteType;
 }
 
@@ -79,17 +76,17 @@ const onCreate = async (item: string) => {
 
     const result = await createTag(item)
 
-    if (result[0] && !result[1]) {
-        storage.tags.push(result[0][0])
-        currentNoteTags.value = [...currentNoteTags.value, { value: result[0][0].id, label: result[0][0].name }]
+    if (result.data != null && result.error == null) {
+        storage.tags.push({ id: result.data[0].id, name: result.data[0].name, createdAt: new Date(result.data[0].id) })
+        currentNoteTags.value = [...currentNoteTags.value, { value: result.data[0].id, label: result.data[0].name }]
 
         vueToast.success("Success to create tag", {
             description: "Tag successfuly added.",
         });
     }
-    if (!result[0] && result[1]) {
+    if (result.data == null && result.error != null) {
         vueToast.error("Failed to create tag", {
-            description: result[1] as string,
+            description: result.error as string,
         });
     }
 }
@@ -149,8 +146,6 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     const result = await insertNote(event.data, getValue().id);
     upsertNoteTag(currentNoteTags.value);
 
-    console.log(event.data, currentNoteTags.value, result);
-
     if (result[0] && !result[1]) {
         vueToast.info("Note successfully Updated", {
             description: `Your note title: ${event.data.title} updated`,
@@ -166,17 +161,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
 }
 
 const upsertNoteTag = async (tag: inputTagType[]) => {
-
     const result = await upsertTag(tag, getValue().id)
-    // if (result) {
-    //     getValue().tags.push({
-    //         id: result[0].tagId,
-    //         name: result[0].name
-    //     })
-    //     console.log(result[0])
-    // }
-    console.log(result);
-
 }
 
 const resetToPrevSaved = async (id: string) => {

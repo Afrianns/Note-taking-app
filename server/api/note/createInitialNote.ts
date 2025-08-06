@@ -1,5 +1,6 @@
 import { getDb } from "~/server/db/db";
 import { notes } from "~/server/schema/notes-schema";
+import { noteTagType, noteType } from "~/types/types";
 export default defineEventHandler(async (event) => {
   const db = getDb();
   const data = await readBody(event);
@@ -19,10 +20,10 @@ export default defineEventHandler(async (event) => {
       id: singleNote.id,
       title: singleNote.title,
       content: singleNote.content,
-      tags: [],
+      tags: [] as noteTagType[],
       createdAt: singleNote.createdAt,
       updatedAt: singleNote.updatedAt,
-    };
+    } as noteType;
   } catch (err: any) {
     throw createError({ statusCode: 500, statusMessage: err.message });
   }

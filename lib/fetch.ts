@@ -1,13 +1,9 @@
 import type {
-  createdTagType,
-  inputTagType,
-  noteTagType,
-  noteType,
-  tagType,
+  inputTagType
 } from "~/types/types";
 
 export const getSingleNote = async (id: string) => {
-  const result: noteType = await $fetch("/api/note/getSingleNote", {
+  const result = await $fetch("/api/note/getSingleNote", {
     method: "POST",
     body: {
       noteId: id.split("_")[1],
@@ -18,7 +14,7 @@ export const getSingleNote = async (id: string) => {
 };
 
 export const createTag = async (item: string) => {
-  const result: createdTagType = await $fetch("/api/tag/createTag", {
+  const result = await $fetch("/api/tag/createTag", {
     method: "POST",
     body: {
       nameTag: item,
@@ -56,7 +52,7 @@ export const insertNote = async (
 };
 
 export const upsertTag = async (tags: inputTagType[], noteId: string) => {
-  const result: noteType = await $fetch("/api/tag/upsertNoteTag", {
+  const result = await $fetch("/api/tag/upsertNoteTag", {
     method: "POST",
     body: { tags: tags, noteId: noteId },
   });

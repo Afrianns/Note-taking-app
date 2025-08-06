@@ -36,7 +36,6 @@ export const useSessionStore = defineStore("sessionStore", {
       this.getAllTags();
 
       if (data) {
-        console.log(data);
         this.credential = data.user;
         this.getCurrentNoteUser(data.user.id);
         this.getArchivedNoteUser(data.user.id);
@@ -51,7 +50,6 @@ export const useSessionStore = defineStore("sessionStore", {
         },
       });
 
-      console.log("store", result);
       if (result.length > 0) {
         this.notesExist = noteExistType.EXIST;
       } else {
@@ -63,7 +61,7 @@ export const useSessionStore = defineStore("sessionStore", {
 
     async getAllTags() {
       const result = await $fetch("/api/tag/getAllTags");
-      console.log(result);
+
       this.tags = result as unknown as tagType[];
       this.loadedAll++;
     },

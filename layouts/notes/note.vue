@@ -177,7 +177,12 @@ const createInitialNote = async (title: string) => {
         vueToast.success("Successfully created", {
             description: 'The note has been created.',
         });
-        storage.addNote(result as unknown as noteType)
+        storage.addNote({
+            ...result,
+            tags: result.tags.map((tag) => tag),
+            createdAt: new Date(result.createdAt),
+            updatedAt: new Date(result.updatedAt)
+        })
     }
 
     loadingState.value = false
