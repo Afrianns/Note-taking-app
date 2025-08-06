@@ -1,28 +1,22 @@
 <template>
     <NuxtLayout name="settings-setting">
-        <div class="flex max-lg:flex-col gap-x-4 my-3">
-            <URadioGroup indicator="end" size="xl" color="primary" v-model="radioValue"
+        <div class="flex max-lg:flex-col gap-x-4 my-3 h-[calc(100vh-150px)]">
+            <URadioGroup indicator="end" size="xl" color="primary" v-model="storage.themeMode"
                 :ui="{ item: 'mb-3 lg:w-[25rem] flex items-center', description: 'text-main-700' }"
                 @click="setPreferences" variant="card" :items="items" />
-            <div class="mt-10 lg:mt-auto mx-auto">
-                <UButton label="Save" type="submit" variant="soft" class="self-end px-10" size="xl" />
-            </div>
         </div>
     </NuxtLayout>
 </template>
 <script setup lang="ts">
 
-import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui';
+import type { RadioGroupItem } from '@nuxt/ui';
+import { useSessionStore } from '~/store/storage';
 
+const storage = useSessionStore()
 const mode = useColorMode()
-const radioValue = ref<RadioGroupValue>('system')
-
-onMounted(() => {
-    mode.preference = radioValue.value as string;
-})
 
 const setPreferences = computed(() => {
-    mode.preference = radioValue.value as string;
+    mode.preference = storage.themeMode as string;
 })
 
 const items = ref<RadioGroupItem[]>([
@@ -43,7 +37,4 @@ const items = ref<RadioGroupItem[]>([
         description: 'Set your interface same as your computer.'
     }
 ])
-
-
-
 </script>

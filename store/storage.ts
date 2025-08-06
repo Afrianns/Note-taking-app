@@ -1,5 +1,5 @@
 import { getSession } from "~/lib/auth-client";
-
+import type { RadioGroupValue } from "@nuxt/ui";
 import {
   type noteType,
   type tagType,
@@ -19,6 +19,7 @@ type useSessionStoreType = {
 
 export const useSessionStore = defineStore("sessionStore", {
   state: () => ({
+    themeMode: "system",
     loadedAll: 0,
     firstTimeload: true,
     credential: {
@@ -31,6 +32,11 @@ export const useSessionStore = defineStore("sessionStore", {
     notesArchivedExist: notesArchivedExistType.DEFAULT,
   }),
   actions: {
+    initialThemeMode() {
+      const mode = useColorMode();
+      mode.preference = this.themeMode as string;
+    },
+
     async getUserCredential() {
       const { data } = await getSession();
       this.getAllTags();
