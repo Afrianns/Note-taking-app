@@ -1,6 +1,6 @@
 <template>
-    <UContainer>
-        <UTabs :items="items" class="md:w-1/2 mx-auto my-10">
+    <UContainer class="h-screen flex flex-col justify-center items-center">
+        <UTabs :items="items" class="md:w-1/2">
             <template #login="{ item }">
                 <UCard class="w-full dark:bg-neutral-950 bg-white">
                     <p class="text-muted mb-4 font-bold text-lg">
@@ -97,7 +97,6 @@
                             v-on:click="sendRegisterData()" />
                     </UForm>
                 </UCard>
-                {{ data }}
             </template>
         </UTabs>
 
@@ -117,9 +116,6 @@ const items = [{
     slot: 'register',
     label: 'register'
 }]
-
-// const item = 'Create your account. Click save when you\'re done.';
-// const item = "Make changes to your account here. Click save when you\'re done.";
 
 const stateLogin = reactive({
     email: '',
