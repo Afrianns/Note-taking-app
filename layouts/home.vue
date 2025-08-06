@@ -1,5 +1,5 @@
 <template>
-    <div v-show="false"
+    <div v-show="!storage.credential.emailVerified"
         class="bg-green-400 w-full py-3 text-gray-200 font-medium flex items-center justify-center gap-x-2 fixed top-0 left-0 right-0 z-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 56 56">
             <path fill="currentColor"
@@ -7,8 +7,9 @@
         </svg>
         <p>Send verification to your email by clicking <span class="underline cursor-pointer"
                 @click="verifyEmail()">here</span></p>
+        <strong>Email Verification will not working, i didnt set domain for [resend]</strong>
     </div>
-    <div class="flex" :class="{ ' pt-12': false }">
+    <div class="flex" :class="{ ' pt-12': !storage.credential.emailVerified }">
         <div class="w-64 fixed lg:flex hidden">
             <div class="w-full p-5">
                 <h1 class=" font-Manu-Consent text-2xl font-bold text-gray-800 dark:text-gray-200 underline">The Notes
@@ -57,7 +58,7 @@
                     </nuxt-link>
                 </div>
             </div>
-            <slot search="" />
+            <slot />
         </div>
     </div>
 </template>
@@ -65,6 +66,7 @@
 
 import { sendVerificationEmail } from '~/lib/auth-client';
 import { useSessionStore } from '~/store/storage';
+import { toast as vueToast } from 'vue-sonner';
 
 let storage = useSessionStore();
 
@@ -75,7 +77,7 @@ if (!storage.credential.id) {
 }
 
 const input = useTemplateRef('input')
-const toast = useToast()
+const query = ref('')
 
 defineShortcuts({
     '/': () => {
@@ -83,7 +85,6 @@ defineShortcuts({
     }
 })
 
-const query = ref('');
 
 watch(() => query.value, () => {
     useQueryFilterSearch(query.value)
@@ -99,22 +100,18 @@ const verifyEmail = async () => {
             callbackURL: "/dashboard",
         });
 
+        console.log(result.data, storage.credential)
+
         if (result.data) {
-            return toast.add({
-                title: 'Successfully Sent.',
-                description: 'Link verification has sent to your email.',
-                icon: 'qlementine-icons:success-12',
-                color: "primary"
-            })
+            return vueToast.success("Successfully Sent.", {
+                description: "Link verification has sent to your email.",
+            });
         }
     }
 
-    return toast.add({
-        title: 'Uh oh! Something went wrong.',
-        description: 'There was a problem with your request.',
-        icon: 'material-symbols-light:info-outline',
-        color: "primary"
-    })
+    vueToast.error("Uh oh! Something went wrong.", {
+        description: "There was a problem with your request.",
+    });
 }
 
 </script>

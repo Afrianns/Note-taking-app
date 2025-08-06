@@ -6,6 +6,9 @@ import { getDb } from "../server/db/db";
 
 import * as schema from "../server/schema/auth-schema";
 
+const config = useRuntimeConfig();
+const resend = new Resend(config.resendKey as string);
+
 export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
@@ -17,14 +20,12 @@ export const auth = betterAuth({
         { user, newEmail, url, token },
         request
       ) => {
-        const config = useRuntimeConfig();
-        const resend = new Resend(config.resendKey as string);
-
-        const res = await resend.emails.send({
-          from: "Afrianns <onboarding@resend.dev>",
-          to: user.email,
-          subject: "Verify Change Email - Note App",
-          html: `
+        try {
+          const res = await resend.emails.send({
+            from: "Afrianns <onboarding@resend.dev>",
+            to: user.email,
+            subject: "Verify Change Email - Note App",
+            html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FAF7F3; height: 100vh;">
                 <div style="padding:20px; background: #004030"></div>
                 <h1 style="color: #333; text-align: center;">The Note Inc!</h1>
@@ -32,21 +33,22 @@ export const auth = betterAuth({
               <p style="font-size: 1.6rem; margin-bottom: 1rem; color: #fff; font-weight: 600;">Hi, ${user.name}</p>
               <p style="margin: 0; color: #fff;">To update email to <span style='text-decoration: underline; color: #FEFAE0;'>${newEmail}</span>. Please click link <a href='${url}' style='text-decoration: underline; color: #FEFAE0;'>here</a>.</p>
                 <div style="border-top: 1px solid red; border-color: #D2C1B6; font-size: 10px; color: #eee; margin-top: 1rem; margin-bottom: 1rem">
-                    <p style="font-weight: 600; margin-top: 1rem">Doesn't work? Use link below</p>      
+                    <p style="font-weight: 600; margin-top: 1rem">Doesn't work? Use link below</p>
                       <span style='text-decoration: underline; color: #FEFAE0;'>${url}</span>
                 </div>
               </div>
             </div>
             `,
-        });
+          });
+        } catch (error) {
+          console.log(error);
+          throw new Error("there is an error");
+        }
       },
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
-      const config = useRuntimeConfig();
-      const resend = new Resend(config.resendKey as string);
-
       const res = await resend.emails.send({
         from: "Afrianns <onboarding@resend.dev>",
         to: user.email,
@@ -59,7 +61,7 @@ export const auth = betterAuth({
           <p style="font-size: 1.6rem; margin-bottom: 1rem; color: #fff; font-weight: 600;">Hi, ${user.name}</p>
           <p style="margin: 0; color: #fff;">Click this link to verify your email <a href='${url}' style='text-decoration: underline; color: #FEFAE0;'>here</a>.</p>
             <div style="border-top: 1px solid red; border-color: #D2C1B6; font-size: 10px; color: #eee; margin-top: 1rem; margin-bottom: 1rem">
-                <p style="font-weight: 600; margin-top: 1rem">Doesn't work? Copy link below</p>      
+                <p style="font-weight: 600; margin-top: 1rem">Doesn't work? Copy link below</p>
                 <span style='text-decoration: underline; color: #FEFAE0;'>${url}</span>
             </div>
           </div>

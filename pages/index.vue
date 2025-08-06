@@ -23,8 +23,11 @@
                             </UInput>
                         </UFormField>
 
-                        <UButton label="Login" type="submit" variant="soft" class="self-end"
-                            v-on:click="sendLoginData()" />
+                        <div class="w-fit ml-auto">
+                            <utilsLoading :loadingState="loginLoading" color="primary">
+                                <UButton label="Login" type="submit" class="self-end" v-on:click="sendLoginData()" />
+                            </utilsLoading>
+                        </div>
                     </UForm>
                 </UCard>
             </template>
@@ -92,9 +95,12 @@
                                 </template>
                             </UInput>
                         </UFormField>
-
-                        <UButton label="Register" type="submit" variant="soft" class="self-end"
-                            v-on:click="sendRegisterData()" />
+                        <div class="w-fit ml-auto">
+                            <utilsLoading :loadingState="registerLoading" color="neutral">
+                                <UButton label="Register" type="submit" class="self-end"
+                                    v-on:click="sendRegisterData()" />
+                            </utilsLoading>
+                        </div>
                     </UForm>
                 </UCard>
             </template>
@@ -102,11 +108,15 @@
 
     </UContainer>
 </template>
-
 <script setup lang="ts">
 import { signUp, signIn } from '~/lib/auth-client';
+import { toast as vueToast } from 'vue-sonner';
+
 
 const show = ref([false, false, false])
+
+const registerLoading = ref(false)
+const loginLoading = ref(false)
 let data = ref()
 
 const items = [{
@@ -162,20 +172,24 @@ const sendLoginData = async () => {
     await signIn.email({
         email: stateLogin.email,
         password: stateLogin.password,
-        callbackURL: "/dashboard",
         rememberMe: false
     }, {
         onRequest: (ctx) => {
             //show loading
-            console.log("loading...", ctx)
+            loginLoading.value = true;
         },
         onSuccess: (ctx) => {
             console.log("success!", ctx)
+            loginLoading.value = false
+            navigateTo('/dashboard')
             //redirect to the dashboard or sign in page
         },
         onError: (ctx) => {
             // display the error message
-            console.log('error', ctx, ctx.error.message);
+            loginLoading.value = false;
+            vueToast.error("Login failed", {
+                description: `Failed with error: ${ctx.error.message}`,
+            });
         },
     })
 }
@@ -188,16 +202,20 @@ const sendRegisterData = async () => {
         callbackURL: "/dashboard"
     }, {
         onRequest: (ctx) => {
-            //show loading
+            registerLoading.value = true
             console.log("loading...", ctx)
         },
         onSuccess: (ctx) => {
             console.log("success!", ctx)
-            //redirect to the dashboard or sign in page
+            registerLoading.value = false
+            navigateTo('/dashboard')
         },
         onError: (ctx) => {
             // display the error message
-            console.log('error', ctx, ctx.error.message);
+            registerLoading.value = false
+            vueToast.error("Register failed", {
+                description: `Failed with error: ${ctx.error.message}`,
+            });
         },
     });
 }
