@@ -160,9 +160,7 @@ async function onSubmit(event: FormSubmitEvent<typeof state>) {
     loadingState.value = false
 }
 
-const upsertNoteTag = async (tag: inputTagType[]) => {
-    const result = await upsertTag(tag, getValue().id)
-}
+const upsertNoteTag = async (tag: inputTagType[]) => await upsertTag(tag, getValue().id)
 
 const resetToPrevSaved = async (id: string) => {
     const result = await getSingleNote(id);
@@ -170,7 +168,13 @@ const resetToPrevSaved = async (id: string) => {
     let indexNote = storage.notes.findIndex((note) => note.id == (route.params.id as string))
 
     if (result && indexNote != -1) {
-        storage.notes[indexNote] = result as unknown as noteType
+        storage.notes[indexNote] = {
+            ...result,
+            tags: result.tags.map((tag) => tag),
+            createdAt: new Date(result.createdAt),
+            updatedAt: new Date(result.updatedAt)
+        }
+
         getNote()
     }
 }

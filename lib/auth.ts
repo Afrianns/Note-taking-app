@@ -21,7 +21,7 @@ export const auth = betterAuth({
         request
       ) => {
         try {
-          const res = await resend.emails.send({
+          await resend.emails.send({
             from: "Afrianns <onboarding@resend.dev>",
             to: user.email,
             subject: "Verify Change Email - Note App",
@@ -41,19 +41,19 @@ export const auth = betterAuth({
             `,
           });
         } catch (error) {
-          console.log(error);
-          throw new Error("there is an error");
+          throw new Error("There is an error while sending an email");
         }
       },
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
-      const res = await resend.emails.send({
-        from: "Afrianns <onboarding@resend.dev>",
-        to: user.email,
-        subject: "Verification Email - Note App",
-        html: `
+      try {
+        await resend.emails.send({
+          from: "Afrianns <onboarding@resend.dev>",
+          to: user.email,
+          subject: "Verification Email - Note App",
+          html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FAF7F3; height: 100vh;">
             <div style="padding:20px; background: #004030"></div>
             <h1 style="color: #333; text-align: center;">The Note Inc!</h1>
@@ -67,7 +67,10 @@ export const auth = betterAuth({
           </div>
         </div>
         `,
-      });
+        });
+      } catch (error) {
+        throw new Error("There is an error while sending an email");
+      }
     },
   },
   database: drizzleAdapter(getDb(), {

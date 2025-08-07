@@ -1,11 +1,9 @@
-import { useSession } from "~/lib/auth-client";
+import { useSession, getSession } from "~/lib/auth-client";
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { data: session } = await useSession(useFetch);
+export default defineNuxtRouteMiddleware(async (to) => {
+  const sessionn = await getSession();
 
-  console.log(to.path);
-
-  if (!session.value) {
+  if (!sessionn.data) {
     if (to.path !== "/") {
       return navigateTo("/");
     }

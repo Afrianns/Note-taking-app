@@ -90,14 +90,16 @@ export const useSessionStore = defineStore("sessionStore", {
     },
 
     removeNoteById(id: string) {
-      this.notes.splice(id.split("_")[0] as unknown as number, 1);
+      let index = this.getNoteByUUID(id);
+      this.notes.splice(index, 1);
 
       if (this.notes.length <= 0) {
         this.notesExist = noteExistType.NOTEXIST;
       }
     },
     removeArchivedNoteById(id: string) {
-      this.archivedNotes.splice(id.split("_")[0] as unknown as number, 1);
+      let index = this.getArchivedNoteByUUID(id);
+      this.archivedNotes.splice(index, 1);
 
       if (this.archivedNotes.length <= 0) {
         this.notesArchivedExist = notesArchivedExistType.NOTEXIST;
@@ -122,6 +124,20 @@ export const useSessionStore = defineStore("sessionStore", {
 
     removeTagById(id: number) {
       this.tags.splice(id, 1);
+    },
+
+    getArchivedNoteByUUID(id: string) {
+      const index = this.archivedNotes.findIndex(
+        (note: noteType) => note.id == (id as string)
+      );
+      return index;
+    },
+
+    getNoteByUUID(id: string) {
+      const index = this.notes.findIndex(
+        (note: noteType) => note.id == (id as string)
+      );
+      return index;
     },
   },
 });

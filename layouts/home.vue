@@ -100,8 +100,6 @@ const verifyEmail = async () => {
             callbackURL: "/dashboard",
         });
 
-        console.log(result.data, storage.credential)
-
         if (result.data) {
             return vueToast.success("Successfully Sent.", {
                 description: "Link verification has sent to your email.",

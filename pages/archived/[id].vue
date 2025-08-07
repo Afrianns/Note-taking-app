@@ -46,17 +46,16 @@
 </template>
 <script setup lang="ts">
 import { useSessionStore } from '~/store/storage'
-import { notesArchivedExistType } from "~/types/types"
+import { notesArchivedExistType, type noteType } from "~/types/types"
+
 const route = useRoute()
 
 const storage = useSessionStore();
 
-const getValueBaseOnId = (uuid: string) => {
-    const id = uuid.split("_")[0];
-    return storage.archivedNotes[id as unknown as number]
+const getValue = () => {
+    let result = storage.archivedNotes.find((note) => note.id == (route.params.id as string));
+    return result as noteType;
 }
-
-const getValue = () => getValueBaseOnId(route.params.id as string)
 
 const state = reactive({
     title: getValue()?.title,
@@ -72,16 +71,12 @@ watch(() => storage.notesArchivedExist, () => {
     }
 })
 
-// const noteId = () => (route.params.id as string).split("_")[0] as unknown as number;
-
-
 // load first time since data async
 watch(() => storage.archivedNotes, () => {
     state.title = getValue()?.title
     state.content = getValue()?.content
     state.updatedAt = getValue()?.updatedAt
     state.tags = getValue()?.tags
-    console.log(getValue())
 })
 
 </script>

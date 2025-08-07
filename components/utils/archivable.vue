@@ -42,11 +42,15 @@ const checkTypeArchivable = (id: string, name: string) => {
 const archivedNote = async (id: string) => {
     loadingArchivableState.value = true
 
-    const result = await archivingNote(id.split("_")[1], true);
+    const result = await archivingNote(id, true);
 
-    if (result) {
+    if (result && id != null) {
         openConfirmationArchived.value = false
-        storage.addArchivedNote(storage.notes[id.split("_")[0] as unknown as number])
+
+        const index = storage.getNoteByUUID(id)
+
+        storage.addArchivedNote(storage.notes[index])
+
         storage.removeNoteById(id)
         vueToast.success("Success to archived", {
             description: 'The note has been archived.',
@@ -60,11 +64,14 @@ const archivedNote = async (id: string) => {
 const restoreArchivedNote = async (id: string) => {
     loadingArchivableState.value = true
 
-    const result = await archivingNote(id.split("_")[1], false);
+    const result = await archivingNote(id, false);
 
     if (result) {
         openConfirmationArchived.value = false
-        storage.addNote(storage.archivedNotes[id.split("_")[0] as unknown as number])
+
+        const index = storage.getArchivedNoteByUUID(id)
+        storage.addNote(storage.archivedNotes[index])
+
         storage.removeArchivedNoteById(id)
         vueToast.success("Successfully to restored", {
             description: 'The note has been restored.',

@@ -109,15 +109,14 @@
     </UContainer>
 </template>
 <script setup lang="ts">
-import { signUp, signIn } from '~/lib/auth-client';
 import { toast as vueToast } from 'vue-sonner';
+import { signIn, signUp } from '~/lib/auth-client';
 
 
 const show = ref([false, false, false])
 
 const registerLoading = ref(false)
 const loginLoading = ref(false)
-let data = ref()
 
 const items = [{
     slot: 'login',
@@ -174,15 +173,13 @@ const sendLoginData = async () => {
         password: stateLogin.password,
         rememberMe: false
     }, {
-        onRequest: (ctx) => {
+        onRequest: () => {
             //show loading
             loginLoading.value = true;
         },
-        onSuccess: (ctx) => {
-            console.log("success!", ctx)
+        onSuccess: () => {
             loginLoading.value = false
             navigateTo('/dashboard')
-            //redirect to the dashboard or sign in page
         },
         onError: (ctx) => {
             // display the error message
@@ -199,14 +196,11 @@ const sendRegisterData = async () => {
         email: stateRegister.email,
         password: stateRegister.password,
         name: stateRegister.name,
-        callbackURL: "/dashboard"
     }, {
-        onRequest: (ctx) => {
+        onRequest: () => {
             registerLoading.value = true
-            console.log("loading...", ctx)
         },
-        onSuccess: (ctx) => {
-            console.log("success!", ctx)
+        onSuccess: () => {
             registerLoading.value = false
             navigateTo('/dashboard')
         },
